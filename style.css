@@ -1,0 +1,75 @@
+body {
+  background: radial-gradient(
+      circle at top left,
+      rgba(24, 132, 142, 0.08) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(255, 94, 126, 0.08) 0%,
+      transparent 50%
+    ),
+    linear-gradient(180deg, #f8fafc 0%, #f1efff 50%, #ffffff 100%);
+}
+
+main {
+  text-align: center;
+}
+
+/*Header*/
+.logo {
+  font-size: 2rem;
+  height: 50px;
+}
+
+/*Hero*/
+.hero-section {
+  padding: 5rem 0 6rem;
+}
+
+h1 {
+  background: linear-gradient(135deg, #18848e 0%, #6c5ce7 50%, #ff5e7e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  font-weight: 800;
+  margin: 0 15%;
+}
+
+.hero-section p {
+  width: 70%;
+  margin: auto;
+}
+
+.accent-roomie {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  font-family: "Cherry Bomb One", system-ui;
+  font-style: normal;
+}
+
+/*Rooms*/
+.img-room {
+  height: 30%;
+}
+
+/* botonmes  */
+.btn-mio {
+  background-color: #9e60e6;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-mio:hover {
+  background-color: #884ad1;
+}
+
+.bg-mio {
+  background-color: #884ad1;
+}

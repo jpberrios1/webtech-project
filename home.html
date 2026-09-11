@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  
+    <!-- CSS  -->
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="logo navbar-brand accent-roomie" href="#">
+                    <img src="./img/logo.png" class="logo d-inline-block align-top" alt="logo roomies">
+                    Roomies
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav ms-auto align-items-center gap-2">
+                        <a class="nav-link" href="#">Search</a>
+                        <a class="nav-link" href="#">Publish a Room</a>
+                        <a class="nav-link" href="#">Log In</a>
+                        <a class="nav-link btn-mio" href="#">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+    <main class="hero-section">
+        <h1 class="display-4">Split the rent and multiply the experiences with the perfect <span class="accent-roomie">Roomie</span>.</h1>
+        <p class="lead text-muted mt-3 mb-5">Find available rooms or list your spare space in a safe and trusted community.</p>
+
+        <section class="search bg-white mx-auto py-4 px-3 px-sm-4>
+            <form class="container bg-white p-3 p-md-4 rounded-4 shadow-sm border" style="max-width: 1000px;">
+                <div class="row g-2 g-md-3 align-items-end">
+                
+                <!--Search-->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <label for="search" class="form-label small text-muted mb-1">Search</label>
+                    <input type="text" id="search" class="form-control border-0 bg-light" placeholder="Type to search...">
+                </div>
+
+                <!--city -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <label for="city" class="form-label small text-muted mb-1">City</label>
+                    <select id="city" class="form-select border-0 bg-light">
+                        <option selected>All</option>
+                        <option value="las-condes">New York</option>
+                        <option value="providencia">Boston</option>
+                        <option value="santiago-centro">Florida</option>
+                    </select>
+                </div>
+
+                <!--Budget-->
+                <div class="col-12 col-sm-6 col-lg-2">
+                    <label for="budget" class="form-label small text-muted mb-1">Max budget</label>
+                    <div class="input-group">
+                        <span class="input-group-text border-0 bg-light text-muted">$</span>
+                        <input type="number" id="budget" class="form-control border-0 bg-light" placeholder="400">
+                    </div>
+                </div>
+
+                <!--Availability-->
+                <div class="col-12 col-sm-6 col-lg-2">
+                    <label for="date" class="form-label small text-muted mb-1">Date</label>
+                    <input type="date" id="date" class="form-control border-0 bg-light">
+                </div>
+
+                <!-- submit-->
+                <div class="col-12 col-lg-2">
+                    <button type="submit" class="btn btn-mio w-100 py-2 rounded-3">
+                    Search
+                    </button>
+                </div>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <!--rooms -->
+    <section class="rooms container text-center">
+        <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+            <div class="col">
+                <div class="card h-100 shadow-sm border">
+                    <img class="card-img-top img-room"src="./img/room1.png" alt="room 1">
+                    <div class="card-body">
+                        <h5 class="card-title">Bright Urban Oasis</h5>
+                        <p class="card-text"> sun-drenched, fully furnished room perfect for young professionals looking for a peaceful work-from-home environment</p>
+                    </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Downtown / Financial District</li>
+                            <li class="list-group-item">$850 / month </li>
+                            <li class="list-group-item">Available starting October 1st, 2026</li>
+                        </ul>
+                    <div class="card-body">
+                        <a href="#" class="card-link btn-mio">See more</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm border">
+                    <img class="card-img-top img-room" src="./img/room2.png" alt="room 2">
+                    <div class="card-body">
+                        <h5 class="card-title">Modern Minimalist Space</h5>
+                        <p class="card-text">Cozy and quiet room features a spacious desk, high-speed Wi-Fi, and a friendly atmosphere with university roommates.</p>
+                    </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">University Quarter / Westside</li>
+                            <li class="list-group-item">$620 / month</li>
+                            <li class="list-group-item">Available starting September 15th, 2026</li>
+                        </ul>
+                    <div class="card-body">
+                        <a  href="#" class="card-link btn-mio">See more</a>
+                    </div>
+                </div>
+            </div>
+
+           <div class="col">
+                <div class="card h-100 shadow-sm border">
+                        <img class="card-img-top img-room" src="./img/room3.png" alt="room 3">
+                    <div class="card-body">
+                        <h5 class="card-title">Creative Artsy Room</h5>
+                        <p class="card-text">Large bedroom in a beautiful shared loft with exposed brick walls, a huge balcony, and an amazing rooftop view.</p>
+                    </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Arts District</li>
+                            <li class="list-group-item">$1,100 / month</li>
+                            <li class="list-group-item">Available Immediately</li>
+                        </ul>
+                    <div class="card-body">
+                        <a href="#" class="card-link btn-mio">See more</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>  
+
+    <!--how it works section -->
+    <section class="container text-center py-5">
+        <h2 class="h2 text-uppercase fw-bold text-secondary mb-4 mt-5">How it works</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-3 bg-white shadow rounded-4 p-3">
+            <div class="col">
+                <div class="p-5 bg-light rounded-4">
+                    <span class="badge rounded-circle bg-mio fs-4 mb-3">1</span>
+                    <h3 class="h6 fw-bold">Publish or Search</h3>
+                    <p class="small text-muted mb-0">List your available room or browse listings by neighborhood and budget.</p>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="p-5 bg-light rounded-4 h-100">
+                    <span class="badge rounded-circle bg-mio fs-4 mb-3">2</span>
+                    <h3 class="h6 fw-bold">Apply Privately</h3>
+                    <p class="small text-muted mb-0">Send an introduction message with your move-in date and desired stay.</p>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="p-5 bg-light rounded-4 h-100">
+                    <span class="badge rounded-circle bg-mio fs-4 mb-3">3</span>
+                    <h3 class="h6 fw-bold">Visit & Move In</h3>
+                    <p class="small text-muted mb-0">Schedule a visit with the host, confirm the match, and get settled.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="bg-white border-top py-4 mt-5 text-center text-muted small">
+        <div class="container">
+            <p class="mb-1 fw-semibold text-dark">
+            Group: Juan Pablo Berrios - Agustin Flores - Ana Lobo &middot Web Technologies &middot; 2026
+            </p>
+        </div>
+    </footer>
+    
+    
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  
+
+</body>
+</html>
