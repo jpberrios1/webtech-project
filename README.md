@@ -22,13 +22,13 @@ This repository contains the foundation work for Assignment
 .
 ├── docs/
 │   ├── user_stories.md          # Complete user stories covering all platform roles
-│   ├── domain_model.md          # DBML source / write-up of the relational model
+│   ├── domain_model.md          # DBML source with image
 │   ├── domain_model.png         # Exported image of the relational database diagram
 │   └── design_decisions.pdf     # Domain model design decisions
 ├── index.html                   # Main static landing page
 ├── style.css                    # Custom styles complementing Bootstrap 5
 ├── img/                         # Images of the project
-└── README.md                    # Project overview and setup instructions
+└── README.md                    # Project overview
 ```
 
 ## Authors
