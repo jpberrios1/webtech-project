@@ -1,4 +1,4 @@
-# User Stories 
+# User Stories
 
 1. As a member (host), I want to register a property with its address and shared areas, so that I can use it as a base for publishing my available rooms.
 
