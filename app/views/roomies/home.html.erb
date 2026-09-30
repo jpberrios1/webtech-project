@@ -1,27 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roomies</title>
-    <link rel="icon" type="image/png" href="./img/logo.png">
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-  
-    <!-- CSS  -->
-    <link rel="stylesheet" href="style.css">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
-</head>
-<body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
                 <a class="logo navbar-brand accent-roomie" href="#">
-                    <img src="./img/logo.png" class="logo d-inline-block align-top" alt="logo roomies">
+                    <%= image_tag "logo.png", class: "logo d-inline-block align-top", alt: "logo roomies" %>
                     Roomies
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -96,7 +78,7 @@
         <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
             <div class="col">
                 <div class="card h-100 shadow-sm border">
-                    <img class="card-img-top img-room"src="./img/room1.png" alt="room 1">
+                    <%= image_tag "room1.png", class: "card-img-top img-room", alt: "room 1" %>
                     <div class="card-body">
                         <h5 class="card-title">Bright Urban Oasis</h5>
                         <p class="card-text"> sun-drenched, fully furnished room perfect for young professionals looking for a peaceful work-from-home environment</p>
@@ -114,7 +96,7 @@
 
             <div class="col">
                 <div class="card h-100 shadow-sm border">
-                    <img class="card-img-top img-room" src="./img/room2.png" alt="room 2">
+                    <%= image_tag "room2.png", class: "card-img-top img-room", alt: "room 2" %>
                     <div class="card-body">
                         <h5 class="card-title">Modern Minimalist Space</h5>
                         <p class="card-text">Cozy and quiet room features a spacious desk, high-speed Wi-Fi, and a friendly atmosphere with university roommates.</p>
@@ -132,7 +114,7 @@
 
            <div class="col">
                 <div class="card h-100 shadow-sm border">
-                        <img class="card-img-top img-room" src="./img/room3.png" alt="room 3">
+                    <%= image_tag "room3.png", class: "card-img-top img-room", alt: "room 3" %>
                     <div class="card-body">
                         <h5 class="card-title">Creative Artsy Room</h5>
                         <p class="card-text">Large bedroom in a beautiful shared loft with exposed brick walls, a huge balcony, and an amazing rooftop view.</p>
@@ -188,11 +170,3 @@
             </p>
         </div>
     </footer>
-    
-    
-    <!-- Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-  
-
-</body>
-</html>
