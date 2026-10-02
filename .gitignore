@@ -38,3 +38,31 @@
 !/app/assets/builds/.keep
 
 /node_modules
+
+.DS_Store
+
+# [ADDED] Keep a shareable template of env vars (the /.env* rule above would hide it)
+!/.env.example
+
+# [ADDED] Gems installed locally (bundle config set path vendor/bundle)
+/vendor/bundle
+
+# [ADDED] Local database dumps (we use Postgres, so no .sqlite3 needed)
+*.dump
+*.sql.gz
+
+# [ADDED] Per-machine mise overrides (like the mise.local.toml we discussed)
+mise.local.toml
+.mise.local.toml
+
+# [ADDED] Windows OS files (your teammate's machine)
+Thumbs.db
+Desktop.ini
+
+# [ADDED] Editor files: ignore personal settings, keep shared project ones
+.idea/
+*.swp
+*.swo
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
