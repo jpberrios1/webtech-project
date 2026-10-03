@@ -126,6 +126,8 @@ Table property_amenities {
   id integer [pk, increment]
   property_id integer [not null]
   amenity_id integer [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
 
   indexes {
     (property_id, amenity_id) [unique]
@@ -136,6 +138,8 @@ Table property_shared_spaces {
   id integer [pk, increment]
   property_id integer [not null]
   shared_space_id integer [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
 
   indexes {
     (property_id, shared_space_id) [unique]
@@ -155,7 +159,7 @@ Table listings {
   description text
   house_rules text
   status listing_status [not null, default: 'draft']
-  published_at timestamp
+  published_at datetime
   created_at timestamp [not null]
   updated_at timestamp [not null]
 
@@ -186,6 +190,7 @@ Table saved_listings {
   user_id integer [not null]
   listing_id integer [not null]
   created_at timestamp [not null]
+  updated_at timestamp [not null]
 
   indexes {
     (user_id, listing_id) [unique]
@@ -245,6 +250,7 @@ Table reviews {
 
   indexes {
     property_id
+    rating
   }
 }
 
@@ -256,7 +262,7 @@ Table reports {
   description text
   status report_status [not null, default: 'pending']
   reviewer_id integer [note: 'FK -> users, the moderator who handled it']
-  reviewed_at timestamp
+  reviewed_at datetime
   created_at timestamp [not null]
   updated_at timestamp [not null]
 
@@ -299,3 +305,10 @@ Ref: visits.application_id > applications.id
 Ref: reviews.visit_id - visits.id
 Ref: reviews.property_id > properties.id
 ```
+
+## Changes made since Assigment 1
+
+* Added "updated_at" and "created_at" to all tables that didnt have it to add contsistency and uniformity across the model
+* Property_type got default "other" because it being not nullable, needs a value to hold it on creation
+* "available_from" on listings and "reviewed_at" from reports changed type to datetime for better readability, comparisons and the fact that it doesnt need to be that specific
+* "lenght_stay_of_days" on the application has to be greater than 0

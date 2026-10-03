@@ -22,7 +22,7 @@ This repository contains the foundation work for Assignment
 .
 ├── docs/
 │   ├── user_stories.md          # Complete user stories covering all platform roles
-│   ├── domain_model.md          # DBML source with image
+│   ├── domain_model.md          # DBML source with image, changes made since start
 │   ├── domain_model.png         # Exported image of the relational database diagram
 │   └── design_decisions.pdf     # Domain model design decisions
 ├── index.html                   # Main static landing page
