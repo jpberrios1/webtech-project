@@ -1,0 +1,25 @@
+<main class="container py-5">
+  <!-- Botón de regreso -->
+  <div class="mb-4">
+    <%= link_to "&larr; Back to Properties".html_safe, properties_path, class: "text-decoration-none text-secondary fw-semibold hover-accent" %>
+  </div>
+
+  <div class="row g-5">
+    <div class="col-md-12">
+      <h1 class="display-4 fw-bold"><%= @property.title %></h1>
+      <p class="lead text-muted"><%= @property.address %> - <%= link_to @property.neighborhood.name, neighborhood_path(@property.neighborhood), class: "text-decoration-none accent-roomie" %></p>
+    </div>
+
+    <div class="col-md-12 mt-4">
+      <h3 class="fw-bold mb-4">Rooms in this Property</h3>
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        <% @property.listings.each do |listing| %>
+          <div class="col">
+            <%= render partial: "shared/listing_card", locals: { listing: listing } %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+</main>

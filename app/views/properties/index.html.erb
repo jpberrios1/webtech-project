@@ -1,0 +1,29 @@
+<main class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold">Available <span class="accent-roomie">Properties</span></h1>
+    <p class="text-muted">Browse all houses and apartments in our network.</p>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <% @properties.each do |property| %>
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0 rounded-4 bg-light">
+          <div class="card-body p-4">
+            <h5 class="card-title fw-bold"><%= property.title %></h5>
+            <h6 class="card-subtitle mb-3 text-muted">
+              <%= property.neighborhood.name %>, <%= property.neighborhood.city %>
+            </h6>
+            <p class="card-text small">
+              <strong>Type:</strong> <%= property.property_type.capitalize %><br>
+              <strong>Bedrooms:</strong> <%= property.bedrooms %> | <strong>Bathrooms:</strong> <%= property.bathrooms %>
+            </p>
+            <p class="card-text small text-muted">Hosted by: <%= property.user.name %></p>
+          </div>
+          <div class="card-footer bg-transparent border-top-0 pb-4 px-4">
+            <%= link_to "View Property", property_path(property), class: "btn btn-outline-secondary w-100 rounded-3" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</main>

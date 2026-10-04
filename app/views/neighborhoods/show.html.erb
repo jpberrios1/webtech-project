@@ -1,0 +1,19 @@
+<main class="container py-5">
+  <div class="mb-5 text-center">
+    <h1 class="display-4 fw-bold"><%= @neighborhood.name %></h1>
+    <p class="lead text-muted"><%= @neighborhood.city %></p>
+    <%= link_to "&larr; Back to Neighborhoods".html_safe, neighborhoods_path, class: "text-decoration-none text-secondary" %>
+  </div>
+
+  <h3 class="fw-bold mb-4">Available Rooms in this area</h3>
+  
+  <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+    <% @properties.each do |property| %>
+      <% property.listings.each do |listing| %>
+        <div class="col">
+          <%= render partial: "shared/listing_card", locals: { listing: listing } %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</main>

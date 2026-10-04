@@ -1,0 +1,13 @@
+<main class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="display-5">Available <span class="accent-roomie">Rooms</span></h1>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+    <% @listings.each do |listing| %>
+      <div class="col">
+        <%= render partial: "shared/listing_card", locals: { listing: listing } %>
+      </div>
+    <% end %>
+  </div>
+</main>

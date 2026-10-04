@@ -1,0 +1,89 @@
+<main class="container py-5">
+  <div class="mb-4 text-start">
+    <%= link_to "&larr; Back to Search".html_safe, listings_path, class: "text-decoration-none text-secondary fw-semibold hover-accent" %>
+  </div>
+
+  <div class="row g-5">
+    <div class="col-md-8">
+      <h1 class="display-5"><%= @listing.title %></h1>
+      <p class="lead text-muted">
+        <%= link_to @listing.property.title, property_path(@listing.property), class: "text-decoration-none accent-roomie" %> in 
+        <%= @listing.property.neighborhood.name %>, <%= @listing.property.neighborhood.city %>
+      </p>
+      
+      <% if @listing.listing_photos.any? %>
+        <div class="mb-4">
+          <img src="<%= @listing.listing_photos.first.url %>" class="img-fluid rounded-4 shadow-sm" alt="Listing Image">
+        </div>
+      <% end %>
+
+      <div class="bg-light p-4 rounded-4 mb-4">
+        <h3 class="h5 fw-bold mb-3">Description</h3>
+        <p class="text-muted"><%= @listing.description %></p>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-md-6">
+          <h4 class="h6 fw-bold text-uppercase text-secondary">Amenities</h4>
+          <ul class="list-group list-group-flush bg-transparent">
+            <% @listing.property.amenities.each do |amenity| %>
+              <li class="list-group-item bg-transparent text-muted border-0 py-1"><i class="bi bi-check2 text-success me-2"></i><%= amenity.name %></li>
+            <% end %>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h4 class="h6 fw-bold text-uppercase text-secondary">Shared Spaces</h4>
+          <ul class="list-group list-group-flush bg-transparent">
+            <% @listing.property.shared_spaces.each do |space| %>
+              <li class="list-group-item bg-transparent text-muted border-0 py-1"><i class="bi bi-house text-primary me-2"></i><%= space.name %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-4 sticky-top" style="top: 20px;">
+        <div class="card-body p-4 text-center">
+          <h3 class="card-title display-6 accent-roomie">$<%= @listing.monthly_rent %></h3>
+          <p class="text-muted mb-4">per month</p>
+          
+          <ul class="list-group list-group-flush text-start mb-4">
+            <li class="list-group-item d-flex justify-content-between px-0"><strong>Deposit:</strong> $<%= @listing.deposit %></li>
+            <li class="list-group-item d-flex justify-content-between px-0"><strong>Available:</strong> <%= @listing.available_from.strftime("%b %d, %Y") %></li>
+            <li class="list-group-item d-flex justify-content-between px-0"><strong>Minimum stay:</strong> <%= @listing.minimum_stay_days %> days</li>
+          </ul>
+
+          <button class="btn btn-mio w-100 py-3 rounded-3">Apply Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<hr class="my-5">
+<h3 class="fw-bold mb-4">Property Reviews</h3>
+<% target_property = defined?(@listing) ? @listing.property : @property %>
+
+<% if target_property.reviews.any? %>
+  <div class="row g-4">
+    <% target_property.reviews.each do |review| %>
+      <div class="col-md-6">
+        <div class="card border-0 bg-light rounded-4 h-100 p-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-semibold"><%= review.user.name %></span>
+            <span class="text-warning">
+              <% review.rating.times do %><i class="bi bi-star-fill"></i><% end %>
+              <% (5 - review.rating).times do %><i class="bi bi-star"></i><% end %>
+            </span>
+          </div>
+          <p class="text-muted small mb-0">"<%= review.comment %>"</p>
+          <span class="text-muted" style="font-size: 0.75rem;"><%= review.created_at.strftime("%B %Y") %></span>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-muted">No reviews yet for this property.</p>
+<% end %>
+
+</main>

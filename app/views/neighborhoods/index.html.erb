@@ -1,0 +1,20 @@
+<main class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold">Explore <span class="accent-roomie">Neighborhoods</span></h1>
+    <p class="text-muted mt-2">Find the perfect area for your next home.</p>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <% @neighborhoods.each do |neighborhood| %>
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0 bg-light rounded-4">
+          <div class="card-body text-center p-4">
+            <h5 class="card-title fw-bold"><%= neighborhood.name %></h5>
+            <p class="text-muted mb-4"><%= neighborhood.city %></p>
+            <%= link_to "View Properties", neighborhood_path(neighborhood), class: "btn btn-outline-secondary w-100 rounded-3" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</main>
