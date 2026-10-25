@@ -1,0 +1,16 @@
+<main class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="mb-4">
+        <%= link_to "&larr; Back to Listing".html_safe, @listing, class: "text-decoration-none text-secondary" %>
+      </div>
+      
+      <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">Update <span class="accent-roomie">Listing</span></h1>
+        <p class="text-muted">Modify the details for <%= @listing.title %>.</p>
+      </div>
+      
+      <%= render "form", listing: @listing %>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,27 @@
+<main class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 rounded-4 bg-light">
+        <div class="card-body p-5">
+          <h3 class="fw-bold mb-4 text-center">Edit your Review</h3>
+          
+          <%= form_with model: @review, class: "row g-3" do |f| %>
+            <div class="col-md-3">
+              <%= f.label :rating, "Rating (1-5)", class: "form-label fw-bold small text-muted" %>
+              <%= f.number_field :rating, in: 1..5, class: "form-control border-0 bg-white", required: true %>
+            </div>
+            <div class="col-md-9">
+              <%= f.label :comment, class: "form-label fw-bold small text-muted" %>
+              <%= f.text_field :comment, class: "form-control border-0 bg-white", required: true %>
+            </div>
+            <div class="col-12 text-end mt-4">
+              <%= link_to "Cancel", property_path(@review.property), class: "btn btn-light me-2 rounded-3" %>
+              <%= f.submit "Update Review", class: "btn btn-mio px-4 rounded-3" %>
+            </div>
+          <% end %>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

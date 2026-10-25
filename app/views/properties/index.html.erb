@@ -1,8 +1,10 @@
 <main class="container py-5">
   <div class="text-center mb-5">
     <h1 class="display-5 fw-bold">Available <span class="accent-roomie">Properties</span></h1>
+    <%= link_to "Add New Property", new_property_path, class: "btn btn-mio rounded-3" %>
     <p class="text-muted">Browse all houses and apartments in our network.</p>
   </div>
+
 
   <div class="row row-cols-1 row-cols-md-3 g-4">
     <% @properties.each do |property| %>

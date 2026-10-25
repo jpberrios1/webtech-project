@@ -3,12 +3,19 @@
     <%= link_to "&larr; Back to Search".html_safe, listings_path, class: "text-decoration-none text-secondary fw-semibold hover-accent" %>
   </div>
 
+  <% if @listing.property.user == current_user || current_user.name.downcase.include?("mod") %>
+    <div class="d-flex gap-2 mb-4">
+      <%= link_to "Edit Room", edit_listing_path(@listing), class: "btn btn-sm btn-outline-primary rounded-3" %>
+      <%= link_to "Delete Room", @listing, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-outline-danger rounded-3" %>
+    </div>
+  <% end %>
+
   <div class="row g-5">
     <div class="col-md-8">
       <h1 class="display-5"><%= @listing.title %></h1>
       <p class="lead text-muted">
         <%= link_to @listing.property.title, property_path(@listing.property), class: "text-decoration-none accent-roomie" %> in 
-        <%= @listing.property.neighborhood.name %>, <%= @listing.property.neighborhood.city %>
+        <%= @listing.property.neighborhood&.name %>, <%= @listing.property.neighborhood&.city %>
       </p>
       
       <% if @listing.listing_photos.any? %>
@@ -53,8 +60,42 @@
             <li class="list-group-item d-flex justify-content-between px-0"><strong>Available:</strong> <%= @listing.available_from.strftime("%b %d, %Y") %></li>
             <li class="list-group-item d-flex justify-content-between px-0"><strong>Minimum stay:</strong> <%= @listing.minimum_stay_days %> days</li>
           </ul>
+          
+          <% if @listing.property.user != current_user && @listing.status == "published" %>
+            <% application = @application || Application.new %>
+            <%= form_with model: [@listing, application], class: "row g-3 text-start mt-2" do |f| %>
+              
+              <!-- Caja de Errores de Validación -->
+              <% if application.errors.any? %>
+                <div class="col-12">
+                  <div class="alert alert-danger py-2 mb-0 rounded-3 small">
+                    <ul class="mb-0 ps-3">
+                      <% application.errors.full_messages.each do |msg| %>
+                        <li><%= msg %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                </div>
+              <% end %>
 
-          <button class="btn btn-mio w-100 py-3 rounded-3">Apply Now</button>
+              <div class="col-12">
+                <%= f.label :message, "Introduction Message", class: "form-label fw-bold small text-muted" %>
+                <%= f.text_area :message, rows: 2, class: "form-control border-0", placeholder: "Tell the host about yourself..." %>
+              </div>
+              <div class="col-6">
+                <%= f.label :desired_move_in_date, "Move-in Date", class: "form-label fw-bold small text-muted" %>
+                <%= f.date_field :desired_move_in_date, class: "form-control border-0" %>
+              </div>
+              <div class="col-6">
+                <%= f.label :length_of_stay_days, "Stay (Days)", class: "form-label fw-bold small text-muted" %>
+                <%= f.number_field :length_of_stay_days, class: "form-control border-0" %>
+              </div>
+              <div class="col-12 mt-3">
+                <%= f.submit "Apply Now", class: "btn btn-mio w-100 py-2 rounded-3" %>
+              </div>
+            <% end %>
+          <% end %>
+
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 <main class="container py-5">
-  <div class="row justify-content-center">
+<ul class="list-group list-group-flush">  <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="mb-4">
         <%= link_to "&larr; Back to Applications".html_safe, applications_path, class: "text-decoration-none text-secondary" %>
@@ -52,16 +52,37 @@
             <h4 class="h5 fw-bold mb-3">Scheduled Visits</h4>
             <ul class="list-group list-group-flush">
               <% @application.visits.each do |visit| %>
-                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
                   <div>
                     <span class="fw-semibold text-dark"><%= visit.scheduled_at.strftime("%B %d, %Y at %I:%M %p") %></span>
                   </div>
-                  <span class="badge bg-light text-dark border"><%= visit.status.capitalize %></span>
+                  
+                  <div class="d-flex align-items-center gap-2">
+                    <!-- Formulario para cambiar estado -->
+                    <%= form_with model: visit, class: "d-flex gap-2 mb-0" do |f| %>
+                      <%= f.select :status, ["proposed", "confirmed", "completed", "cancelled"], {}, class: "form-select form-select-sm bg-light border-0" %>
+                      <%= f.submit "Update", class: "btn btn-sm btn-outline-primary" %>
+                    <% end %>
+                    
+                    <!-- Botón para eliminar -->
+                    <%= link_to "Delete", visit, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this visit?" }, class: "btn btn-sm btn-outline-danger" %>
+                  </div>
                 </li>
               <% end %>
             </ul>
           <% end %>
         </div>
+        <div class="mb-4">
+          <%= link_to "Manage", edit_application_path(@application), class: "btn btn-outline-primary rounded-3" %>
+        </div>
+
+        <% if @application.seeker == current_user && (@application.status == "pending" || @application.status == "shortlisted") %>
+          <div class="mt-4 pt-3 border-top text-end">
+            <%= link_to "Withdraw Application", @application, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to withdraw this application? This cannot be undone." }, class: "btn btn-outline-danger rounded-3" %>
+          </div>
+        <% end %>
+
+
       </div>
     </div>
   </div>

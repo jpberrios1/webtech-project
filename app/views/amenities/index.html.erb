@@ -1,0 +1,35 @@
+<main class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5 fw-bold">Manage <span class="accent-roomie">Amenities</span></h1>
+
+     <% if current_user.name.downcase.include?("mod") %>
+      <div>
+        <%= link_to "Add New Amenity", new_amenity_path, class: "btn btn-mio rounded-3" %>  
+      </div>
+    <% end %>
+  </div>
+
+  <div class="table-responsive bg-white shadow-sm rounded-4 border p-0">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th class="px-4 py-3">Name</th>
+          <th class="px-4 py-3 text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @amenities.each do |amenity| %>
+          <tr>
+            <td class="px-4 py-3 fw-semibold"><%= amenity.name %></td>
+            <td class="px-4 py-3 text-end">
+                <% if current_user.name.downcase.include?("mod") %>
+                  <%= link_to "Edit", edit_amenity_path(amenity), class: "btn btn-sm btn-outline-secondary rounded-3 me-2" %>
+                  <%= link_to "Delete", amenity, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-outline-danger rounded-3" %>
+                <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</main>

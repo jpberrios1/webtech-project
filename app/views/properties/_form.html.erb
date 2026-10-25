@@ -1,0 +1,61 @@
+<%= form_with model: property, class: "card shadow-sm border-0 rounded-4 p-4 mt-4" do |f| %>
+  <div class="row g-4 mb-4">
+    <div class="col-md-12">
+      <%= f.label :title, class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.text_field :title, class: "form-control bg-light border-0 py-2", placeholder: "e.g., Cozy House in Ñuñoa" %>
+    </div>
+    
+    <div class="col-md-8">
+      <%= f.label :address, class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.text_field :address, class: "form-control bg-light border-0 py-2", placeholder: "Street Name 123" %>
+    </div>
+    
+    <div class="col-md-4">
+      <%= f.label :neighborhood_id, "Neighborhood", class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.collection_select :neighborhood_id, Neighborhood.all, :id, :name, { prompt: "Select area" }, { class: "form-select bg-light border-0 py-2" } %>
+    </div>
+
+    <div class="col-md-4">
+      <%= f.label :property_type, "Property Type", class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.select :property_type, [["House", "house"], ["Apartment", "apartment"], ["Loft", "loft"]], { prompt: "Select type" }, class: "form-select bg-light border-0 py-2" %>
+    </div>
+    
+    <div class="col-md-4">
+      <%= f.label :bedrooms, class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.number_field :bedrooms, class: "form-control bg-light border-0 py-2" %>
+    </div>
+    
+    <div class="col-md-4">
+      <%= f.label :bathrooms, class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.number_field :bathrooms, class: "form-control bg-light border-0 py-2" %>
+    </div>
+
+    <div class="col-md-6 mt-4">
+      <label class="form-label fw-bold small text-muted text-uppercase">Amenities</label>
+      <div class="d-flex flex-wrap gap-3">
+        <%= f.collection_check_boxes :amenity_ids, Amenity.all, :id, :name do |b| %>
+          <div class="form-check">
+            <%= b.check_box class: "form-check-input" %>
+            <%= b.label class: "form-check-label text-muted" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    
+    <div class="col-md-6 mt-4">
+      <label class="form-label fw-bold small text-muted text-uppercase">Shared Spaces</label>
+      <div class="d-flex flex-wrap gap-3">
+        <%= f.collection_check_boxes :shared_space_ids, SharedSpace.all, :id, :name do |b| %>
+          <div class="form-check">
+            <%= b.check_box class: "form-check-input" %>
+            <%= b.label class: "form-check-label text-muted" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end mt-2">
+    <%= f.submit class: "btn btn-mio px-5 rounded-3" %>
+  </div>
+<% end %>

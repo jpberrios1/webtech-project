@@ -1,0 +1,16 @@
+<%= form_with model: neighborhood, class: "card shadow-sm border-0 rounded-4 p-4" do |f| %>
+  <div class="row g-4 mb-4">
+    <div class="col-md-6">
+      <%= f.label :name, class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.text_field :name, class: "form-control bg-light border-0 py-2", placeholder: "e.g., Providencia" %>
+    </div>
+    <div class="col-md-6">
+      <%= f.label :city, class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.text_field :city, class: "form-control bg-light border-0 py-2", placeholder: "e.g., Santiago" %>
+    </div>
+  </div>
+  <div class="d-flex justify-content-end gap-3 mt-2">
+    <%= link_to "Cancel", neighborhoods_path, class: "btn btn-light px-4 rounded-3" %>
+    <%= f.submit class: "btn btn-mio px-5 rounded-3" %>
+  </div>
+<% end %>
