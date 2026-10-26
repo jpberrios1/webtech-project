@@ -67,10 +67,30 @@ class ApplicationsController < ApplicationController
     # NEW: goes back to the page the button was on (show, edit or index)
     def finish(succeeded, notice)
         if succeeded
-            redirect_back fallback_location: application_path(@application), notice: notice, status: :see_other
+            @applications = Application.all
+            @pending_count = @applications.count(&:pending?)
+
+            respond_to do |format|
+            format.turbo_stream do
+                flash.now[:notice] = notice 
+                render :update_status
+            end
+
+            format.html do
+                redirect_back fallback_location: application_path(@application), notice: notice, status: :see_other
+            end
+        end
         else
-            redirect_back fallback_location: application_path(@application),
-                          alert: @application.errors.full_messages.to_sentence, status: :see_other
+            respond_to do |format|
+            format.turbo_stream do
+                flash.now[:alert] = @application.errors.full_messages.to_sentence
+                render :update_status, status: :unprocessable_entity
+            end
+
+            format.html do
+                redirect_back fallback_location: application_path(@application), alert: @application.errors.full_messages.to_sentence, status: :see_other
+            end
+        end
         end
     end
 

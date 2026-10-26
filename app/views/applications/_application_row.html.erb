@@ -1,0 +1,31 @@
+<tr id="<%= dom_id(application) %>">
+  <td class="px-4 py-3">
+    <%= link_to application.listing.title,
+          listing_path(application.listing),
+          class: "text-decoration-none fw-semibold text-dark" %>
+  </td>
+
+  <td class="py-3">
+    <%= application.seeker.name %>
+  </td>
+
+  <td class="py-3">
+    <%= application.desired_move_in_date.strftime("%b %d, %Y") %>
+  </td>
+
+  <td class="py-3">
+    <span class="badge bg-<%= application.accepted? ? 'success' : (application.pending? ? 'warning text-dark' : 'secondary') %>">
+      <%= application.status.capitalize %>
+    </span>
+  </td>
+
+  <td class="px-4 py-3 text-end">
+    <%= link_to "Manage",
+          application_path(application),
+          class: "btn btn-sm btn-outline-primary rounded-3 me-2" %>
+
+    <div class="d-inline-flex justify-content-end">
+      <%= render "actions", application: application %>
+    </div>
+  </td>
+</tr>
