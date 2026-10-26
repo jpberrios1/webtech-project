@@ -1,13 +1,15 @@
 <div class="card h-100 shadow-sm border">
-  <% if listing.listing_photos.any? %>
-    <img src="<%= listing.listing_photos.first.url %>" class="card-img-top img-room" alt="<%= listing.title %>" style="height: 200px; object-fit: cover;">
+  <% if listing.photos.attached? %>
+    <%# Only the first photo, and only its small :card variant %>
+    <%= image_tag listing.photos.first.variant(:card), class: "card-img-top img-room",
+          alt: listing.title, style: "height: 200px; object-fit: cover;" %>
   <% else %>
     <div class="bg-secondary text-white d-flex align-items-center justify-content-center img-room" style="height: 200px;">No Image</div>
   <% end %>
   
   <div class="card-body">
     <h5 class="card-title"><%= listing.title %></h5>
-    <p class="card-text text-truncate"><%= listing.description %></p>
+    <p class="card-text text-truncate"><%= listing.description.to_plain_text %></p>
   </div>
   
   <ul class="list-group list-group-flush">

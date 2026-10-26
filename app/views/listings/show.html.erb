@@ -45,9 +45,15 @@
         <%= @listing.property.neighborhood&.name %>, <%= @listing.property.neighborhood&.city %>
       </p>
       
-      <% if @listing.listing_photos.any? %>
-        <div class="mb-4">
-          <img src="<%= @listing.listing_photos.first.url %>" class="img-fluid rounded-4 shadow-sm" alt="Listing Image">
+      <% if @listing.photos.attached? %>
+        <div class="row g-2 mb-4">
+          <% @listing.photos.each_with_index do |photo, index| %>
+            <div class="<%= index.zero? ? 'col-12' : 'col-6 col-md-4' %>">
+              <%= image_tag photo.variant(:large), class: "img-fluid rounded-4 shadow-sm w-100",
+                    style: "object-fit: cover; #{index.zero? ? 'max-height: 450px;' : 'height: 150px;'}",
+                    alt: "#{@listing.title}, photo #{index + 1}" %>
+            </div>
+          <% end %>
         </div>
       <% end %>
 

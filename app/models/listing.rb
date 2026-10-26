@@ -1,4 +1,7 @@
 class Listing < ApplicationRecord
+  PHOTO_CONTENT_TYPES = %w[image/jpeg image/png image/webp].freeze
+  PHOTO_MAX_SIZE = 5.megabytes
+
   belongs_to :property
 
   has_rich_text :description
@@ -11,7 +14,10 @@ class Listing < ApplicationRecord
   has_many :applications,   dependent: :destroy
   has_many :reports,        dependent: :destroy
 
-  has_many_attached :photos
+  has_many_attached :photos do |attachable|
+    attachable.variant :card, resize_to_fill: [ 400, 250 ]
+    attachable.variant :large, resize_to_limit: [ 1200, 800 ]
+  end
 
   enum :status, {
     draft: "draft",
@@ -26,7 +32,7 @@ class Listing < ApplicationRecord
   scope :order_soonest_first, -> { order(:available_from) }
   scope :with_neighborhood, -> { includes(:property, :neighborhood) }
   scope :with_room_details, -> { includes(:listing_photos, property: [ :neighborhood, :amenities, :shared_spaces, { reviews: :user } ]) }
-  scope :published_index, -> { published.with_neighborhood.order_soonest_first }
+  scope :published_index, -> { published.with_neighborhood.with_attached_photos.order_soonest_first }
 
   validates :title, presence: true, length: { maximum: 150 }
   validates :status, presence: true
@@ -38,6 +44,7 @@ class Listing < ApplicationRecord
   validates :available_from, presence: true
 
   validate  :available_from_not_in_past, if: :will_save_change_to_available_from?
+  validate  :photos_are_valid_images
 
   def hosted_by?(user)
     user.present? && property.user_id == user.id
@@ -94,6 +101,21 @@ class Listing < ApplicationRecord
 
     if available_from < Date.current
       errors.add(:available_from, "cant be in the past, choose a future date")
+    end
+  end
+
+  def photos_are_valid_images
+    photos.each do |photo|
+      next if photo.persisted?
+
+      unless PHOTO_CONTENT_TYPES.include?(photo.content_type)
+        errors.add(:photos, "must be JPEG, PNG or WebP images (#{photo.filename} is not)")
+      end
+
+      if photo.byte_size > PHOTO_MAX_SIZE
+        errors.add(:photos, "must be #{PHOTO_MAX_SIZE / 1.megabyte} MB or smaller each " \
+                            "(#{photo.filename} is #{ActiveSupport::NumberHelper.number_to_human_size(photo.byte_size)})")
+      end
     end
   end
 end

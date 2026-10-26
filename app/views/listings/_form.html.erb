@@ -57,9 +57,35 @@
     </div>
 
     <!-- Active Storage -->
+    <!-- Active Storage -->
     <div class="col-md-12">
       <%= f.label :photos, "Upload Photographs", class: "form-label fw-bold small text-muted text-uppercase" %>
-      <%= f.file_field :photos, multiple: true, accept: "image/*", class: "form-control bg-light border-0" %>
+
+      <%# Photos already saved. Sending a photo set replaces the whole set, so each photo
+        # to keep is sent back by its signed id; unchecking one removes it. %>
+      <% saved_photos = listing.photos.select(&:persisted?) %>
+      <% if saved_photos.any? %>
+        <div class="d-flex flex-wrap gap-3 mb-3">
+          <% saved_photos.each do |photo| %>
+            <label class="text-center small text-muted">
+              <%= image_tag photo.variant(:card), class: "rounded-3 d-block mb-1",
+                    style: "width: 120px; height: 80px; object-fit: cover;" %>
+              <%= check_box_tag "listing[photos][]", photo.signed_id, true,
+                    id: "keep_photo_#{photo.id}", class: "form-check-input me-1" %>
+              Keep
+            </label>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= f.file_field :photos, multiple: true, accept: Listing::PHOTO_CONTENT_TYPES.join(","),
+            class: "form-control bg-light border-0" %>
+      <div class="form-text">
+        JPEG, PNG or WebP, up to <%= Listing::PHOTO_MAX_SIZE / 1.megabyte %> MB each. You can select several at once.
+      </div>
+      <% listing.errors[:photos].each do |message| %>
+        <div class="text-danger small mt-1"><%= message %></div>
+      <% end %>
     </div>
   </div>
 
