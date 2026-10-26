@@ -1,5 +1,7 @@
 class NeighborhoodsController < ApplicationController
-    before_action :set_neighborhood, only: [ :show, :edit, :update, :destroy ]
+
+    before_action :set_neighborhood, only: [:show, :edit, :update, :destroy]
+    before_action :requiere_mod, except: [:index, :show]
 
     def index
         @neighborhoods = Neighborhood.order(:name)
@@ -53,7 +55,7 @@ class NeighborhoodsController < ApplicationController
     end
 
     def requiere_mod
-        unless current_user.name.downcase.includes?("mod")
+        unless current_user.name.downcase.include?("mod")
             redirect_to root_path, alert: "You are not authorized"
         end
     end

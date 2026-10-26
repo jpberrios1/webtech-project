@@ -1,8 +1,8 @@
 class ReviewsController < ApplicationController
   def create
     @review = Review.new(review_params)
-    @review.user = current_user # Asume que tu modelo Review tiene belongs_to :user
-
+    @review.user = current_user 
+    
     if @review.save
       redirect_to @review.property, notice: "Review submitted successfully."
     else
@@ -20,7 +20,7 @@ class ReviewsController < ApplicationController
     if @review.update(review_params)
       redirect_to property_path(@review.property), notice: "Review updated successfully."
     else
-      # Si hay error de validación, vuelve a mostrar el formulario
+
       render :edit, status: :unprocessable_entity
     end
   end

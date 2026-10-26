@@ -17,6 +17,7 @@
       <% if @property.user == current_user || current_user.name.downcase.include?("mod") %>
         <div class="d-flex justify-content-center gap-3 mb-5">
           <%= link_to "Edit Property", edit_property_path(@property), class: "btn btn-outline-primary px-4 rounded-3" %>
+          <%= button_to "Delete Property", @property, method: :delete, data: { turbo_confirm: "Are you sure you want to delete this property?" }, class: "btn btn-outline-danger px-4 rounded-3" %>
           <%= link_to "Add New Room", new_property_listing_path(@property), class: "btn btn-mio px-4 rounded-3" %>
         </div>
       <% end %>
@@ -26,6 +27,7 @@
       <h3 class="fw-bold mb-4">Rooms in this Property</h3>
       <div class="row row-cols-1 row-cols-md-3 g-4">
         <% @property.listings.each do |listing| %>
+          <% next if listing.status == "draft" && @property.user != current_user && !current_user.name.downcase.include?("mod") %>
           <div class="col">
             <%= render partial: "shared/listing_card", locals: { listing: listing } %>
           </div>

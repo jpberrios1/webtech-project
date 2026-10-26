@@ -1,5 +1,7 @@
 class AmenitiesController < ApplicationController
-    before_action :set_amenity, only: [ :show, :edit, :update, :destroy ]
+
+    before_action :set_amenity, only: [:show, :edit, :update, :destroy]
+    before_action :require_mod, only: [:edit, :update, :destroy]
 
     def index
         @amenities = Amenity.order(:name)
