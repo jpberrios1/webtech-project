@@ -34,9 +34,22 @@ class Listing < ApplicationRecord
 
   validate  :available_from_not_in_past, if: :will_save_change_to_available_from?
 
+  def hosted_by?(user)
+    user.present? && property.user_id == user.id
+  end
+
+  def visible_to?(user)
+    !draft? || hosted_by?(user)
+  end
+
   def publish
     unless draft?
       errors.add(:status, "can only publish a listing while in draft status")
+      return false
+    end
+
+    if available_from < Date.current
+      errors.add(:available_from, "is in the past, update it before publishing")
       return false
     end
 
@@ -44,12 +57,23 @@ class Listing < ApplicationRecord
   end
 
   def withdraw
-    unless published?
-      errors.add(:status, "can only withdraw a listing while in published status")
+    if rented? || withdrawn?
+      errors.add(:status, "can't withdraw a listing that is already #{status}")
       return false
     end
 
-    update(status: :withdrawn)
+    transaction do
+      applications.where(status: [ :pending, :shortlisted, :accepted ]).each do |app|
+        app.update!(status: :rejected)
+        app.cancel_open_visits!
+      end
+      update!(status: :withdrawn)
+    end
+
+    true
+  rescue ActiveRecord::RecordInvalid => e
+    errors.add(:base, "Failed to withdraw listing: #{e.message}")
+    false
   end
 
   def mark_as_rented
