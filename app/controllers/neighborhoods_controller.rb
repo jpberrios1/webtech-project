@@ -8,7 +8,7 @@ class NeighborhoodsController < ApplicationController
 
     def show
         @neighborhood = Neighborhood.find(params[:id])
-        @properties = @neighborhood.properties.includes(listings: :listing_photos)
+        @properties = @neighborhood.properties.includes(listings: { photos_attachments: :blob })
     end
 
     def new

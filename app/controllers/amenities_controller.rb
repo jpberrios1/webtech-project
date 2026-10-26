@@ -8,7 +8,6 @@ class AmenitiesController < ApplicationController
 
     def show
        #@neighborhood = Neighborhood.find(params[:id])
-        #@properties = @neighborhood.properties.includes(listings: :listing_photos)
     end
 
     def new
@@ -17,7 +16,7 @@ class AmenitiesController < ApplicationController
 
     def create
         @amenity = Amenity.new(amenity_params)
-        
+
         if @amenity.save
             redirect_to amenities_path, notice: "Amenity created."
         else

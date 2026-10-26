@@ -9,7 +9,6 @@ class Listing < ApplicationRecord
 
   has_one :neighborhood, through: :property
 
-  has_many :listing_photos, dependent: :destroy
   has_many :saved_listings, dependent: :destroy
   has_many :applications,   dependent: :destroy
   has_many :reports,        dependent: :destroy
@@ -31,7 +30,7 @@ class Listing < ApplicationRecord
   scope :under_rent, ->(amount) { where("monthly_rent <= ?", amount) }
   scope :order_soonest_first, -> { order(:available_from) }
   scope :with_neighborhood, -> { includes(:property, :neighborhood) }
-  scope :with_room_details, -> { includes(:listing_photos, property: [ :neighborhood, :amenities, :shared_spaces, { reviews: :user } ]) }
+  scope :with_room_details, -> { with_attached_photos.includes(property: [ :neighborhood, :amenities, :shared_spaces, { reviews: :user } ]) }
   scope :published_index, -> { published.with_neighborhood.with_attached_photos.order_soonest_first }
 
   validates :title, presence: true, length: { maximum: 150 }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_25_183935) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_26_144008) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -73,15 +73,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_183935) do
     t.index ["listing_id"], name: "index_applications_on_listing_id"
     t.index ["seeker_id"], name: "index_applications_on_seeker_id"
     t.index ["status"], name: "index_applications_on_status"
-  end
-
-  create_table "listing_photos", force: :cascade do |t|
-    t.bigint "listing_id", null: false
-    t.string "url", limit: 500, null: false
-    t.string "caption", limit: 255
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["listing_id"], name: "index_listing_photos_on_listing_id"
   end
 
   create_table "listings", force: :cascade do |t|
@@ -217,7 +208,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_183935) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "applications", "listings"
   add_foreign_key "applications", "users", column: "seeker_id"
-  add_foreign_key "listing_photos", "listings"
   add_foreign_key "listings", "properties"
   add_foreign_key "properties", "neighborhoods"
   add_foreign_key "properties", "users"
