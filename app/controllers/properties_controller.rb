@@ -1,10 +1,9 @@
 class PropertiesController < ApplicationController
-
-    before_action :set_property, only: [:show, :edit, :update, :destroy]
+    before_action :set_property, only: [ :show, :edit, :update, :destroy ]
 
     def index
         @properties = Property.includes(:neighborhood, :user).all
-    end 
+    end
 
     def show
     end
@@ -42,7 +41,7 @@ class PropertiesController < ApplicationController
         redirect_to properties_path, notice: "Property was succesfully deleted.", status: :see_other
     end
 
-    private 
+    private
 
     def set_property
         @property = Property.find(params[:id])

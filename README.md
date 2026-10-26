@@ -5,12 +5,12 @@ Roomies is a web platform designed to match people who have a free room in a sha
 Project developed for the **Web Technologies**, Faculty of Engineering and Applied Sciences, **Universidad de los Andes**.
 
 ## Project Documentation
+
 All the technical documents, models, and diagrams for this project are located in the docs/ folder. Click the links below to navigate through the requirements:
 
 * [User Stories](docs/user-stories.md) - Contains the justifying user stories and acceptance criteria.
 * [Domain Model](docs/domain-model.md)- Contains the ER diagram, database schema, and design decisions. [View the simplified diagram](docs/domain-model.png).
-* [Decisions](docs/decisions.pdf) - Contains the modeling decisions, domain assumptions, entity definitions, lifecycle states, and constraints used in the Roomies relational domain model. 
-
+* [Decisions](docs/decisions.pdf) - Contains the modeling decisions, domain assumptions, entity definitions, lifecycle states, and constraints used in the Roomies relational domain model.
 
 ## Structure
 
@@ -27,61 +27,95 @@ All the technical documents, models, and diagrams for this project are located i
 └── README.md                    # Project overview
 ```
 
-# Dependencies
+## Dependencies
+
 * __Ruby:__ 3.3.8
 * __Rails:__ 8.1.4
 * __Node.js:__ 20.20.2
-* __PostgresSQL:__ 18.6
+* __PostgreSQL:__ 18.6
 * __Yarn:__ 1.22.22
 * __PostgreSQL Role:__ A role matching your system's username with permissions to create databases
+* __libvips:__ 8.x (image library Active Storage uses to resize listing photos)
 
 _Note: For a step-by-step guide to installing the dependencies [visit this link](https://brainy-barometer-470.notion.site/Install-Ruby-on-Rails-on-Windows-62a5e4ec60bb4697add5b3dd0fd56dac)_
 
-## Setup instructions
+## Setup instruction
+
 Run the following commands in order to configure the project locally.
 
 1. Clone the repository and navigate into the project directory:
-```
+
+```bash
 git clone https://github.com/jpberrios1/webtech-project
 cd webtech-project
 ```
 
-2. Install required Ruby gems:
+2. Install `libvips` for ActiveStorage photo managing
+
+```bash
+# Ubuntu / Debian / WSL
+sudo apt install libvips
+# macOS
+brew install vips
 ```
+
+Check it with `vips --version`.
+
+3. Install required Ruby gems:
+
+```bash
 bundle install
 ```
-3. Install the Node packages and dependencies required for frontend bundling:
-```
+
+4. Install the Node packages and dependencies required for frontend bundling:
+
+```bash
 yarn install
 ```
 
-4. Build and populate the database
-```
+5. Build and populate the database
+
+```bash
 bin/rails db:drop db:create db:migrate db:seed
 ```
-5. Build the CSS (Crucial to compile Boostrap for the first time)
-```
+
+6. Build the CSS (Crucial to compile Boostrap for the first time)
+
+```bash
 yarn build:css
 ```
+
+## Listing photos (Active Storage)
+
+* A listing can have several photographs, uploaded from the listing form (you can select several files at once).
+* **Accepted formats:** JPEG, PNG and WebP.
+* **Size limit: 5 MB per photo.** Larger files, or files that are not images, are rejected and the error is shown under the upload field. The type is detected from the file's content, not its name.
+* Each photo has two variants: `:card` (400×250, used in the search results and listing cards) and `:large` (up to 1200×800, used on the listing page), so cards never download the original file.
+* When editing a listing, each saved photo has a **Keep** checkbox; uncheck it to remove that photo.
+* In development, files are stored on disk in `storage/` (ignored by Git). The seeds attach the sample images in `db/seeds/images/`.
+* To change the limit or the formats, edit `PHOTO_MAX_SIZE` and `PHOTO_CONTENT_TYPES` in `app/models/listing.rb`. The form's hint and file picker use the same constants.
+
 ## Starting the Application
+
 To run the application, you must use the development script. This ensures the local Sass compiler processes the custom Bootstrap stylesheets in real-time alongside the Rails server.
 
-**NOTES**
+### NOTES
 
 * Do NOT use the standard `rails server` or `bin/rails s` commands, otherwise the page will load without styling
 * The `database.yml` is configured to read the `POSTGRES_PASSWORD` environment variable. If your local PostgreSQL setup requires a password, please provide it when running the commands. For example:
 
-```
+```bash
 POSTGRES_PASSWORD=your_password bin/rails db:setup
-POSTGRES_PASSWORD=your_password bin/dev`
+POSTGRES_PASSWORD=your_password bin/dev
 ```
 
 Start the application by running:
-```
+
+```bash
 bin/dev
 ```
-Once the processes boot up successfully, open your browser and visit `http://127.0.0.1:3000/` to see the website. 
 
+Once the processes boot up successfully, open your browser and visit `http://127.0.0.1:3000/` to see the website.
 
 ## Authors
 

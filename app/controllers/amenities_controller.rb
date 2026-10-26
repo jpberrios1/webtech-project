@@ -1,14 +1,12 @@
 class AmenitiesController < ApplicationController
-
-    before_action :set_amenity, only: [:show, :edit, :update, :destroy]
+    before_action :set_amenity, only: [ :show, :edit, :update, :destroy ]
 
     def index
         @amenities = Amenity.order(:name)
     end
 
     def show
-       #@neighborhood = Neighborhood.find(params[:id])
-        #@properties = @neighborhood.properties.includes(listings: :listing_photos)
+      # @neighborhood = Neighborhood.find(params[:id])
     end
 
     def new
@@ -17,7 +15,7 @@ class AmenitiesController < ApplicationController
 
     def create
         @amenity = Amenity.new(amenity_params)
-        
+
         if @amenity.save
             redirect_to amenities_path, notice: "Amenity created."
         else
@@ -44,7 +42,7 @@ class AmenitiesController < ApplicationController
     end
 
     private
-    
+
     def set_amenity
         @amenity = Amenity.find(params[:id])
     end

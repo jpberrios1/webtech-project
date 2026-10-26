@@ -2,7 +2,7 @@ class ReviewsController < ApplicationController
   def create
     @review = Review.new(review_params)
     @review.user = current_user # Asume que tu modelo Review tiene belongs_to :user
-    
+
     if @review.save
       redirect_to @review.property, notice: "Review submitted successfully."
     else
@@ -16,7 +16,7 @@ class ReviewsController < ApplicationController
 
   def update
     @review = Review.find(params[:id])
-    
+
     if @review.update(review_params)
       redirect_to property_path(@review.property), notice: "Review updated successfully."
     else
@@ -28,7 +28,7 @@ class ReviewsController < ApplicationController
   def destroy
     @review = Review.find(params[:id])
     property = @review.property
-    
+
     # Solo el creador de la reseña o un moderador pueden borrarla
     if @review.user == current_user || current_user.name.downcase.include?("mod")
       @review.destroy
