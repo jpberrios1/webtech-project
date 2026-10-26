@@ -76,12 +76,9 @@
           <%= link_to "Manage", edit_application_path(@application), class: "btn btn-outline-primary rounded-3" %>
         </div>
 
-        <% if @application.seeker == current_user && (@application.status == "pending" || @application.status == "shortlisted") %>
-          <div class="mt-4 pt-3 border-top text-end">
-            <%= link_to "Withdraw Application", @application, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to withdraw this application? This cannot be undone." }, class: "btn btn-outline-danger rounded-3" %>
-          </div>
-        <% end %>
-
+        <div class="px-4 pb-4">
+          <%= render "actions", application: @application %>
+        </div>
 
       </div>
     </div>

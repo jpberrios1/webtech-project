@@ -29,9 +29,9 @@
             <td class="px-4 py-3 text-end">
               <%= link_to "Manage", application_path(app), class: "btn btn-sm btn-outline-primary rounded-3 me-2" %>
               
-              <% if app.seeker == current_user && (app.pending? || app.shortlisted?) %>
-                <%= link_to "Withdraw", app, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to withdraw this application?" }, class: "btn btn-sm btn-outline-danger rounded-3" %>
-              <% end %>
+              <div class="d-inline-flex justify-content-end">
+                <%= render "actions", application: app %>
+              </div>
           </td>
           </tr>
         <% end %>
