@@ -7,11 +7,22 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   root "roomies#home"
+  post "switch_user", to: "sessions#switch"
 
-  resources :listings, only: [:index, :show]
-  resources :properties, only: [:index, :show]
-  resources :neighborhoods, only: [:index, :show]
-  resources :applications, only: [:index, :show]
+  resources :neighborhoods
+  resources :amenities
+  resources :visits
+  resources :reviews
+
+  resources :properties do
+      resources :listings, only: [:new, :create]
+  end
+  
+  resources :listings, except: [:new, :create] do
+      resources :applications, only: [:create]
+  end
+  
+  resources :applications, except: [:new, :create]
 
 
 

@@ -1,0 +1,10 @@
+<%= form_with model: application, class: "card shadow-sm border-0 rounded-4 p-4" do |f| %>
+  <div class="mb-4">
+    <%= f.label :status, "Application Status", class: "form-label fw-bold small text-muted text-uppercase" %>
+    <%= f.select :status, ["pending", "shortlisted", "accepted", "rejected"], {}, class: "form-select bg-light border-0 py-2" %>
+  </div>
+  <div class="d-flex justify-content-end gap-3 mt-2">
+    <%= link_to "Cancel", applications_path, class: "btn btn-light px-4 rounded-3" %>
+    <%= f.submit "Update Status", class: "btn btn-mio px-5 rounded-3" %>
+  </div>
+<% end %>

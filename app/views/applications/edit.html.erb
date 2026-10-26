@@ -1,0 +1,30 @@
+<main class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">Review <span class="accent-roomie">Application</span></h1>
+        <p class="text-muted">Change the status for this applicant.</p>
+      </div>
+      <%= render "form", application: @application %>
+      
+      <% if @application.status == "shortlisted" %>
+        <div class="card shadow-sm border-0 rounded-4 p-4 mt-4 bg-light text-start">
+          <h5 class="fw-bold mb-3">Schedule a Visit</h5>
+          <%= form_with model: Visit.new, class: "row g-3 align-items-end" do |f| %>
+            <%= f.hidden_field :application_id, value: @application.id %>
+            <%= f.hidden_field :status, value: "proposed" %>
+
+            <div class="col-md-8">
+              <%= f.label :scheduled_at, "Date & Time", class: "form-label fw-bold small text-muted" %>
+              <%= f.datetime_field :scheduled_at, class: "form-control border-0 py-2" %>
+            </div>
+            <div class="col-md-4">
+              <%= f.submit "Propose Visit", class: "btn btn-mio w-100 rounded-3" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</main>

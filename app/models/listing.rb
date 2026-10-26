@@ -1,12 +1,17 @@
 class Listing < ApplicationRecord
   belongs_to :property
 
+  has_rich_text :description
+  has_rich_text :house_rules
+
   has_one :neighborhood, through: :property
 
   has_many :listing_photos, dependent: :destroy
   has_many :saved_listings, dependent: :destroy
   has_many :applications,   dependent: :destroy
   has_many :reports,        dependent: :destroy
+
+  has_many_attached :photos
 
   enum :status, {
     draft: "draft",

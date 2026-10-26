@@ -90,6 +90,25 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
 
+"@rails/actiontext@^8.1.400":
+  version "8.1.400"
+  resolved "https://registry.yarnpkg.com/@rails/actiontext/-/actiontext-8.1.400.tgz#3554cecf31b9d9c17474c126d3f53da8ad69b2e3"
+  integrity sha512-WufXWPjzpRyj5/o/J7RW7TSgC3bWUPwmz1uib9asdqXPdC7pARbDHRCJJBfmzE6bqlHeJDA5qqu/AXrbfUlmpQ==
+  dependencies:
+    "@rails/activestorage" ">= 8.1.0-alpha"
+
+"@rails/activestorage@>= 8.1.0-alpha":
+  version "8.1.400"
+  resolved "https://registry.yarnpkg.com/@rails/activestorage/-/activestorage-8.1.400.tgz#355c3b59e238f837ef422d148b361d9a96b28fe6"
+  integrity sha512-ScpkkHXTQ7QByvzLbnrnubpsWRKhlu08kXyRhSV+Hh1s1X43lv5T0PFLhXAvmqrIcq8nQ2up8iyuCmIzacPDDw==
+  dependencies:
+    spark-md5 "^3.0.1"
+
+"@types/trusted-types@^2.0.7":
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.7.tgz#baccb07a970b91707df3a3e8ba6896c57ead2d11"
+  integrity sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==
+
 ansi-regex@^6.2.2:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-6.4.0.tgz#69093d6436d30dbb9b04fe7bdcbcfe16c697d8a1"
@@ -221,6 +240,13 @@ detect-libc@^2.0.3:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-2.1.2.tgz#689c5dcdc1900ef5583a4cb9f6d7b473742074ad"
   integrity sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==
+
+dompurify@^3.2.5:
+  version "3.4.17"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.4.17.tgz#074bbb24eaa419535ac19ffe7f663104b0e1543d"
+  integrity sha512-B/pSlYVHQ58kqISD/yDjuJ1yfzI34m1gF4lAod2bwSRhiN4K5Cl3H8Af7hqB2PmTL911tdEudnnXn5FnhRoz0w==
+  optionalDependencies:
+    "@types/trusted-types" "^2.0.7"
 
 electron-to-chromium@^1.5.439:
   version "1.5.443"
@@ -488,6 +514,11 @@ slash@^5.0.0:
   resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.2.2.tgz#79fb88d97535a21cb27162cb05d211b67acea4ab"
   integrity sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==
 
+spark-md5@^3.0.1:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/spark-md5/-/spark-md5-3.0.2.tgz#7952c4a30784347abcee73268e473b9c0167e3fc"
+  integrity sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==
+
 string-width@^7.0.0, string-width@^7.2.0:
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-7.2.0.tgz#b5bb8e2165ce275d4d43476dd2700ad9091db6dc"
@@ -543,6 +574,13 @@ touch@^3.1.0:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/touch/-/touch-3.1.1.tgz#097a23d7b161476435e5c1344a95c0f75b4a5694"
   integrity sha512-r0eojU4bI8MnHr8c5bNo7lJDdI2qXlWWJk6a9EAFG7vbhTjElYhBVS3/miuE0uOuoLdb8Mc/rVfsmm6eo5o9GA==
+
+trix@^2.1.19:
+  version "2.1.19"
+  resolved "https://registry.yarnpkg.com/trix/-/trix-2.1.19.tgz#1eb5dfd44a41e6179df5b0c17fdea13d10ae805d"
+  integrity sha512-E7RA3EOeUiUwNJlrF5onIOkqCA06xUU6GmHOVxXyMnGMValrDK3Ce7uaMVgiVUOvVt4mzUERAHAzD10mxoLpOg==
+  dependencies:
+    dompurify "^3.2.5"
 
 undefsafe@^2.0.5:
   version "2.0.5"

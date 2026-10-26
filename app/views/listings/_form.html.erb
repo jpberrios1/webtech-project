@@ -1,0 +1,70 @@
+<%= form_with model: [@property, listing].compact, class: "card shadow-sm border-0 rounded-4 p-4" do |f| %>
+  <div class="row g-4 mb-4">
+    <!-- Basic Info -->
+    <div class="col-md-12">
+      <%= f.label :title, class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.text_field :title, class: "form-control bg-light border-0 py-2", placeholder: "e.g., Sunny Master Bedroom" %>
+    </div>
+    
+    <div class="col-md-6">
+      <%= f.label :monthly_rent, "Monthly Rent ($)", class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.number_field :monthly_rent, step: 0.01, class: "form-control bg-light border-0 py-2" %>
+    </div>
+
+    <div class="col-md-6">
+      <%= f.label :deposit, "Deposit ($)", class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.number_field :deposit, step: 0.01, class: "form-control bg-light border-0 py-2" %>
+    </div>
+
+    <!-- Dates & Rules -->
+    <div class="col-md-6">
+      <%= f.label :available_from, class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.date_field :available_from, class: "form-control bg-light border-0 py-2" %>
+    </div>
+
+    <div class="col-md-6">
+      <%= f.label :minimum_stay_days, "Min. Stay (Days)", class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.number_field :minimum_stay_days, class: "form-control bg-light border-0 py-2" %>
+    </div>
+
+    <!-- Features -->
+    <div class="col-md-12">
+      <div class="d-flex gap-4 p-3 bg-light rounded-3">
+        <div class="form-check form-switch">
+          <%= f.check_box :is_furnished, class: "form-check-input" %>
+          <%= f.label :is_furnished, "Furnished", class: "form-check-label" %>
+        </div>
+        <div class="form-check form-switch">
+          <%= f.check_box :has_private_bathroom, class: "form-check-input" %>
+          <%= f.label :has_private_bathroom, "Private Bathroom", class: "form-check-label" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Text -->
+    <div class="col-md-12">
+      <%= f.label :description, class: "form-label fw-bold small text-muted text-uppercase" %>
+      <div class="bg-light border-0 rounded-3 p-2">
+        <%= f.rich_text_area :description, class: "trix-content min-vh-25" %>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+      <%= f.label :house_rules, class: "form-label fw-bold small text-muted text-uppercase" %>
+      <div class="bg-light border-0 rounded-3 p-2">
+        <%= f.rich_text_area :house_rules, class: "trix-content min-vh-25" %>
+      </div>
+    </div>
+
+    <!-- Active Storage -->
+    <div class="col-md-12">
+      <%= f.label :photos, "Upload Photographs", class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.file_field :photos, multiple: true, accept: "image/*", class: "form-control bg-light border-0" %>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-3 mt-2">
+    <%= link_to "Cancel", 'javascript:history.back()', class: "btn btn-light px-4 rounded-3" %>
+    <%= f.submit class: "btn btn-mio px-5 rounded-3" %>
+  </div>
+<% end %>

@@ -1,0 +1,16 @@
+<%= form_with model: visit, class: "card shadow-sm border-0 rounded-4 p-4" do |f| %>
+  <div class="row g-4 mb-4">
+    <div class="col-md-6">
+      <%= f.label :scheduled_at, "Date & Time", class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.datetime_field :scheduled_at, class: "form-control bg-light border-0 py-2" %>
+    </div>
+    <div class="col-md-6">
+      <%= f.label :status, class: "form-label fw-bold small text-muted text-uppercase" %>
+      <%= f.select :status, ["scheduled", "confirmed", "completed", "canceled"], {}, class: "form-select bg-light border-0 py-2" %>
+    </div>
+  </div>
+  <div class="d-flex justify-content-end gap-3 mt-2">
+    <%= link_to "Cancel", visits_path, class: "btn btn-light px-4 rounded-3" %>
+    <%= f.submit "Update Visit", class: "btn btn-mio px-5 rounded-3" %>
+  </div>
+<% end %>
