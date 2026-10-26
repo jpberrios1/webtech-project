@@ -109,5 +109,4 @@ class ApplicationsController < ApplicationController
             deny("Unknown action.")
         end
     end
-
 end

@@ -3,7 +3,7 @@ class ListingsController < ApplicationController
   before_action :require_visible, only: [ :show ]
 
   def index
-    @listings = Listing.published_index 
+    @listings = Listing.published_index
   end
 
   def show

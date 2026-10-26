@@ -16,7 +16,7 @@ class ReviewsController < ApplicationController
 
   def update
     @review = Review.find(params[:id])
-    
+
     if @review.update(review_params)
       redirect_to property_path(@review.property), notice: "Review updated successfully."
     else
@@ -28,7 +28,8 @@ class ReviewsController < ApplicationController
   def destroy
     @review = Review.find(params[:id])
     property = @review.property
-    
+
+    # Solo el creador de la reseña o un moderador pueden borrarla
     if @review.user == current_user || current_user.name.downcase.include?("mod")
       @review.destroy
       redirect_to property_path(property), notice: "Review deleted successfully.", status: :see_other

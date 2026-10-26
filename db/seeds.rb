@@ -17,7 +17,6 @@ Review.destroy_all
 Visit.destroy_all
 SavedListing.destroy_all
 Application.destroy_all
-ListingPhoto.destroy_all
 Listing.destroy_all
 PropertySharedSpace.destroy_all
 PropertyAmenity.destroy_all
@@ -26,6 +25,11 @@ Amenity.destroy_all
 Property.destroy_all
 Neighborhood.destroy_all
 User.destroy_all
+
+# Restart every table's ids at 1, so URLs like /listings/1 stay the same after re-seeding
+ActiveRecord::Base.connection.tables.each do |table|
+  ActiveRecord::Base.connection.reset_pk_sequence!(table)
+end
 
 # ---------------------------------------------------------------------------
 # DATA
@@ -113,19 +117,21 @@ PROPERTIES = {
 LISTINGS = {
   sunny: {
     property: :duplex, created: 10.days.ago, published: 10.days.ago,
-    photo: { url: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267", caption: "Bedroom view" },
+    photos: [ "sunny-1.jpg", "sunny-2.jpg" ],
     attributes: { title: "Sunny Master Bedroom", monthly_rent: 450.0, deposit: 450.0, is_furnished: true,
                   has_private_bathroom: true, minimum_stay_days: 90, available_from: Date.current + 10.days,
                   description: "Beautiful room with plenty of light." }
   },
   cozy: {
     property: :duplex, created: 5.days.ago, published: 5.days.ago,
+    photos: [ "cozy-1.jpg" ],
     attributes: { title: "Small Cozy Room", monthly_rent: 300.0, deposit: 300.0, is_furnished: false,
                   has_private_bathroom: false, minimum_stay_days: 30, available_from: Date.current + 5.days,
                   description: "Perfect for students." }
   },
   luxury: {
     property: :house, created: 1.day.ago, # stays a draft
+    photos: [ "luxury-1.jpg" ],
     attributes: { title: "Luxury Room (Not ready yet)", monthly_rent: 600.0, deposit: 600.0, is_furnished: true,
                   has_private_bathroom: true, minimum_stay_days: 180, available_from: Date.current + 30.days,
                   description: "Still painting the walls." }
@@ -134,6 +140,7 @@ LISTINGS = {
     # Published 20 days ago (not 2) so Bob's application from 15 days ago was made on a published listing.
     # Reserved, not rented: Bob was accepted but his move-in date is still 15 days away.
     property: :flat, created: 20.days.ago, published: 20.days.ago,
+    photos: [ "quiet-1.jpg", "quiet-2.jpg" ],
     attributes: { title: "Quiet Room near Plaza Ñuñoa", monthly_rent: 380.0, deposit: 380.0, is_furnished: true,
                   has_private_bathroom: false, minimum_stay_days: 60, available_from: Date.current + 5.days,
                   description: "Great location, lots of bars and restaurants nearby." }
@@ -165,6 +172,7 @@ LISTINGS = {
   # Edge: reserved (an applicant was accepted, nobody has moved in yet)
   terrace: {
     property: :loft, created: 8.days.ago, published: 8.days.ago,
+    photos: [ "terrace-1.jpg", "terrace-2.jpg" ],
     attributes: { title: "Loft Room with Terrace", monthly_rent: 520.0, deposit: 520.0, is_furnished: true,
                   has_private_bathroom: true, minimum_stay_days: 120, available_from: Date.current + 10.days,
                   description: "Bright room with access to a private terrace.",
@@ -173,6 +181,7 @@ LISTINGS = {
   # Edge: taken down (withdrawn) by the moderator after a fraud report, while it had a pending application
   artsy: {
     property: :loft, created: 12.days.ago, published: 12.days.ago, withdrawn: 7.days.ago,
+    photos: [ "artsy-1.jpg" ],
     attributes: { title: "Artsy Room in Lastarria", monthly_rent: 410.0, deposit: 200.0, is_furnished: false,
                   has_private_bathroom: false, minimum_stay_days: 30, available_from: Date.current + 3.days,
                   description: "Small room full of character." }
@@ -180,6 +189,7 @@ LISTINGS = {
   # Edge: deposit 0 (allowed), no minimum stay (nil), available from today (the limit of "not in the past")
   studio: {
     property: :studio, created: 1.hour.ago, published: 1.hour.ago,
+    photos: [ "studio-1.jpg" ],
     attributes: { title: "Studio Room by the Port", monthly_rent: 250.0, deposit: 0, is_furnished: false,
                   has_private_bathroom: true, minimum_stay_days: nil, available_from: Date.current,
                   description: "Simple room, two blocks from the sea." }
@@ -188,6 +198,7 @@ LISTINGS = {
   # Listings of members who are also seekers
   italia_room: {
     property: :townhouse, created: 6.days.ago, published: 6.days.ago,
+    photos: [ "italia-1.jpg", "italia-2.jpg" ],
     attributes: { title: "Garden Room in Barrio Italia", monthly_rent: 420.0, deposit: 420.0, is_furnished: true,
                   has_private_bathroom: false, minimum_stay_days: 90, available_from: Date.current + 15.days,
                   description: "Quiet room facing the garden, close to cafés and bike lanes.",
@@ -201,6 +212,7 @@ LISTINGS = {
   },
   bellavista_room: {
     property: :bellavista_apt, created: 3.days.ago, published: 3.days.ago,
+    photos: [ "bellavista-1.jpg", "bellavista-2.jpg" ],
     attributes: { title: "Room with Rooftop Access", monthly_rent: 480.0, deposit: 240.0, is_furnished: false,
                   has_private_bathroom: false, minimum_stay_days: 30, available_from: Date.current + 7.days,
                   description: "Lively neighborhood, five minutes from the metro." }
@@ -227,12 +239,16 @@ LISTINGS = {
   },
   cerro_room: {
     property: :cerro_house, created: 40.days.ago, published: 38.days.ago, rented: 25.days.ago,
+    photos: [ "cerro-1.jpg", "cerro-2.jpg" ],
     attributes: { title: "Room with Sea View", monthly_rent: 350.0, deposit: 350.0, is_furnished: true,
                   has_private_bathroom: true, minimum_stay_days: 180, available_from: 30.days.ago.to_date,
                   description: "Wake up to the bay. Steep stairs, great views." }
   }
 }
 
+# Each application: when it was sent, and (if it happened) when the host shortlisted,
+# accepted or rejected it, or the seeker withdrew it. Automatic rejections (another
+# applicant accepted, listing withdrawn) are not written here: they are consequences.
 APPLICATIONS = {
   app1: { listing: :quiet, seeker: :bob, message: "I love Ñuñoa, moving in ASAP!",
           desired_move_in_date: Date.current + 15.days, length_of_stay_days: 180,
@@ -301,20 +317,19 @@ APPLICATIONS = {
                        applied: 35.days.ago, shortlisted: 34.days.ago, accepted: 30.days.ago }
 }
 
-# Each visit: its application, its date and time, and when it was proposed / confirmed / cancelled.
-# "completed: true" marks it completed one hour after its scheduled time (it cannot be completed
-# before it happens). Cancellations caused by rejecting an application are not written here.
+# Each visit: its application, its date and time, and when the host proposed it, rescheduled it,
+# and when the seeker confirmed it. "completed: true" marks it completed one hour after its
+# scheduled time (it cannot be completed before it happens). Cancellations caused by rejecting
+# or withdrawing an application are not written here: they are consequences.
 VISITS = {
   visit1:              { application: :app1, scheduled_at: 12.days.ago.change(hour: 17),
                          proposed: 14.days.ago, confirmed: 13.days.ago, completed: true },
-  # The host had a conflict: this visit was cancelled and a new one proposed (rescheduling
-  # creates a new visit, as in our decisions document)
-  visit_app2_first:    { application: :app2, scheduled_at: 2.days.ago.change(hour: 10),
-                         proposed: (4.days + 2.hours).ago, cancelled: (4.days + 1.hour).ago },
-  visit_app2: { application: :app2, scheduled_at: 2.days.ago.change(hour: 10),
-                proposed: (4.days + 2.hours).ago,
-                rescheduled: { at: (4.days + 1.hour).ago, to: 1.day.from_now.change(hour: 18) },
-                confirmed: 3.days.ago },
+  # The host had a conflict and rescheduled: the first visit is cancelled and a new one is
+  # proposed (as in our decisions document). The confirmation applies to the new visit.
+  visit_app2:          { application: :app2, scheduled_at: 2.days.ago.change(hour: 10),
+                         proposed: (4.days + 2.hours).ago,
+                         rescheduled: { at: (4.days + 1.hour).ago, to: 1.day.from_now.change(hour: 18) },
+                         confirmed: 3.days.ago },
   visit_old_lastarria: { application: :app_old_lastarria, scheduled_at: 415.days.ago.change(hour: 12),
                          proposed: 418.days.ago, confirmed: 417.days.ago, completed: true },
   visit_nunoa:         { application: :app_nunoa, scheduled_at: 305.days.ago.change(hour: 19),
@@ -434,7 +449,12 @@ visits       = {}
 LISTINGS.each do |key, data|
   happened_at(data[:created]) do
     listings[key] = Listing.create!(property: properties.fetch(data[:property]), **data[:attributes])
-    ListingPhoto.create!(listing: listings[key], **data[:photo]) if data[:photo]
+
+    # Photos go through Active Storage and the listing's photo validations (type and size).
+    # The content type is detected from the file itself, not trusted from its name.
+    (data[:photos] || []).each do |name|
+      listings[key].photos.attach(io: File.open(Rails.root.join("db/seeds/images", name)), filename: name)
+    end
   end
   happened_at(data[:published]) { must(listings[key], :publish) }
   happened_at(data[:withdrawn]) { must(listings[key], :withdraw) }
@@ -462,7 +482,7 @@ VISITS.each do |key, data|
   happened_at(data.dig(:rescheduled, :at)) do
     new_visit = visits[key].reschedule(data[:rescheduled][:to])
     raise "Seed failed: could not reschedule #{key}: #{visits[key].errors.full_messages.to_sentence}" unless new_visit
- 
+
     visits[key] = new_visit # the events after this one (confirm, complete) apply to the new visit
   end
   happened_at(data[:confirmed]) { must(visits[key], :confirm) }

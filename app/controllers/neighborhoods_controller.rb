@@ -9,7 +9,7 @@ class NeighborhoodsController < ApplicationController
 
     def show
         @neighborhood = Neighborhood.find(params[:id])
-        @properties = @neighborhood.properties.includes(listings: :listing_photos)
+        @properties = @neighborhood.properties.includes(listings: { photos_attachments: :blob })
     end
 
     def new
@@ -18,7 +18,7 @@ class NeighborhoodsController < ApplicationController
 
     def create
         @neighborhood = Neighborhood.new(neighborhood_params)
-        
+
         if @neighborhood.save
             redirect_to neighborhoods_path, notice: "Neighborhood created."
         else
@@ -45,7 +45,7 @@ class NeighborhoodsController < ApplicationController
     end
 
     private
-    
+
     def set_neighborhood
         @neighborhood = Neighborhood.find(params[:id])
     end

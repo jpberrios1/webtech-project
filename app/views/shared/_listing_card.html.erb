@@ -9,7 +9,7 @@
   
   <div class="card-body">
     <h5 class="card-title"><%= listing.title %></h5>
-    <p class="card-text text-truncate"><%= listing.description %></p>
+    <p class="card-text text-truncate"><%= listing.description.to_plain_text %></p>
   </div>
   
   <ul class="list-group list-group-flush">
