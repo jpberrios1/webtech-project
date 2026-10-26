@@ -1,0 +1,31 @@
+<% host   = application.listing.hosted_by?(current_user) %>
+<% seeker = application.seeker == current_user %>
+
+<div class="d-flex flex-wrap gap-2">
+  <% if host && application.pending? %>
+    <%= button_to "Shortlist", application_path(application), method: :patch,
+          params: { transition: "shortlist" },
+          class: "btn btn-sm btn-outline-primary rounded-3" %>
+  <% end %>
+
+  <% if host && (application.pending? || application.shortlisted?) %>
+    <%= button_to "Accept", application_path(application), method: :patch,
+          params: { transition: "accept" },
+          class: "btn btn-sm btn-success rounded-3",
+          form: { data: { turbo_confirm: "Accept #{application.seeker.name}? Every other open application will be rejected and the listing will be reserved." } } %>
+  <% end %>
+
+  <% if host && (application.pending? || application.shortlisted? || application.accepted?) %>
+    <%= button_to "Reject", application_path(application), method: :patch,
+          params: { transition: "reject" },
+          class: "btn btn-sm btn-outline-danger rounded-3",
+          form: { data: { turbo_confirm: application.accepted? ? "This applicant was accepted. Rejecting them withdraws the listing. Continue?" : "Reject this application?" } } %>
+  <% end %>
+
+  <% if seeker && (application.pending? || application.shortlisted?) %>
+    <%= button_to "Withdraw", application_path(application), method: :patch,
+          params: { transition: "withdraw" },
+          class: "btn btn-sm btn-outline-danger rounded-3",
+          form: { data: { turbo_confirm: "Withdraw your application? This cannot be undone." } } %>
+  <% end %>
+</div>

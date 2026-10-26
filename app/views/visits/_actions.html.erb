@@ -1,0 +1,28 @@
+<%# The buttons allowed right now for this visit, depending on its state and who is looking. %>
+<% host   = visit.application.listing.hosted_by?(current_user) %>
+<% seeker = visit.application.seeker == current_user %>
+
+<div class="d-flex flex-wrap gap-2">
+  <% if seeker && visit.proposed? %>
+    <%= button_to "Confirm", visit_path(visit), method: :patch,
+          params: { transition: "confirm" },
+          class: "btn btn-sm btn-primary" %>
+  <% end %>
+
+  <% if host && visit.confirmed? && visit.scheduled_at <= Time.current %>
+    <%= button_to "Mark Completed", visit_path(visit), method: :patch,
+          params: { transition: "complete" },
+          class: "btn btn-sm btn-success" %>
+  <% end %>
+
+  <% if host && (visit.proposed? || visit.confirmed?) %>
+    <%= link_to "Reschedule", edit_visit_path(visit), class: "btn btn-sm btn-outline-primary" %>
+  <% end %>
+
+  <% if (host || seeker) && (visit.proposed? || visit.confirmed?) %>
+    <%= button_to "Cancel", visit_path(visit), method: :patch,
+          params: { transition: "cancel" },
+          class: "btn btn-sm btn-outline-secondary",
+          form: { data: { turbo_confirm: "Cancel this visit?" } } %>
+  <% end %>
+</div>

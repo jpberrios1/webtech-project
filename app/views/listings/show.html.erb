@@ -10,6 +10,33 @@
     </div>
   <% end %>
 
+  <%# NEW: the state of the listing, and the actions available in that state %>
+  <p class="mb-2">Status: <span class="badge bg-secondary"><%= @listing.status.humanize %></span></p>
+
+  <% if @listing.hosted_by?(current_user) || current_user.moderator? %>
+    <div class="d-flex gap-2 mb-4">
+      <% if @listing.draft? %>
+        <%= button_to "Publish", listing_path(@listing), method: :patch,
+              params: { transition: "publish" },
+              class: "btn btn-sm btn-success rounded-3" %>
+      <% end %>
+
+      <% if @listing.reserved? %>
+        <%= button_to "Mark as Rented", listing_path(@listing), method: :patch,
+              params: { transition: "mark_as_rented" },
+              class: "btn btn-sm btn-dark rounded-3",
+              form: { data: { turbo_confirm: "Has the new housemate moved in?" } } %>
+      <% end %>
+
+      <% unless @listing.rented? || @listing.withdrawn? %>
+        <%= button_to "Withdraw", listing_path(@listing), method: :patch,
+              params: { transition: "withdraw" },
+              class: "btn btn-sm btn-outline-danger rounded-3",
+              form: { data: { turbo_confirm: "Withdraw this listing? Open applications will be rejected and it can't be published again." } } %>
+      <% end %>
+    </div>
+  <% end %>
+
   <div class="row g-5">
     <div class="col-md-8">
       <h1 class="display-5"><%= @listing.title %></h1>

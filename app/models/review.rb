@@ -9,9 +9,9 @@ class Review < ApplicationRecord
   validates :rating, numericality: { only_integer: true, in: 1..5 }
   validates :visit_id, uniqueness: true
 
-  validate :visit_is_completed, on: :create
-  validate :review_by_seeker, on: :create
-  validate :property_matches_visit_property, on: :create
+  validate :visit_is_completed
+  validate :review_by_seeker
+  validate :property_matches_visit_property
 
   private
 
