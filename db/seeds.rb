@@ -27,6 +27,11 @@ Property.destroy_all
 Neighborhood.destroy_all
 User.destroy_all
 
+# Restart every table's ids at 1, so URLs like /listings/1 stay the same after re-seeding
+ActiveRecord::Base.connection.tables.each do |table|
+  ActiveRecord::Base.connection.reset_pk_sequence!(table)
+end
+
 # ---------------------------------------------------------------------------
 # DATA
 # ---------------------------------------------------------------------------
