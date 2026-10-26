@@ -7,8 +7,6 @@ class VisitsController < ApplicationController
     end
 
     def show
-      # @neighborhood = Neighborhood.find(params[:id])
-      # @properties = @neighborhood.properties.includes(listings: :listing_photos)
     end
 
     def new
@@ -40,13 +38,25 @@ class VisitsController < ApplicationController
     def update
         return change_status if params[:transition].present?
 
-        new_visit = @visit.reschedule(visit_params[:scheduled_at])
+        new_status = params.dig(:visit, :status)
+        new_date = params.dig(:visit, :scheduled_at)
 
-        if new_visit
+        success = if new_date.present? && new_date.to_time != @visit.scheduled_at
+                @visit = @visit.reschedule(new_date)
+                @visit.present?
+            elsif new_status == "confirmed"
+                @visit.confirm
+            elsif new_status == "completed"
+                @visit.complete
+            else
+                @visit.update(visit_params)
+            end
+
+        if success
             redirect_to application_path(@visit.application), notice: "Visit rescheduled. The applicant has to confirm the new date.", status: :see_other
         else
             flash.now[:alert] = "Please fix the errors below"
-            render :edit, status: :unprocessable_entity
+            redirect_to application_path(@visit.application), alert: @visit.errors.full_messages.to_sentence.presence || "Invalid visit transition", status: :see_other
         end
     end
 

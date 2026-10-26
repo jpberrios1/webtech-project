@@ -4,38 +4,33 @@
   </div>
 
   <% if @listing.property.user == current_user || current_user.name.downcase.include?("mod") %>
-    <div class="d-flex gap-2 mb-4">
-      <%= link_to "Edit Room", edit_listing_path(@listing), class: "btn btn-sm btn-outline-primary rounded-3" %>
-      <%= link_to "Delete Room", @listing, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-outline-danger rounded-3" %>
+    <div class="card shadow-sm border-0 rounded-4 mb-4 bg-light">
+      <div class="card-body p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <span class="fw-bold me-2">Host Controls</span>
+          <span class="badge bg-dark"><%= @listing.status.capitalize %></span>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <%= link_to "Edit Room", edit_listing_path(@listing), class: "btn btn-sm btn-outline-primary rounded-3" %>
+          
+          <% if @listing.status == "draft" %>
+            <%= button_to "Publish", listing_path(@listing), method: :patch, params: { listing: { status: "published" } }, class: "btn btn-sm btn-success rounded-3" %>
+          <% end %>
+          <% if @listing.status == "published" || @listing.status == "reserved" %>
+            <%= button_to "Withdraw", listing_path(@listing), method: :patch, params: { listing: { status: "withdrawn" } }, class: "btn btn-sm btn-warning rounded-3", data: { turbo_confirm: "Are you sure?" } %>
+          <% end %>
+          <% if @listing.status == "reserved" %>
+            <%= button_to "Mark as Rented", listing_path(@listing), method: :patch, params: { listing: { status: "rented" } }, class: "btn btn-sm btn-success rounded-3" %>
+          <% end %>
+
+          <%= button_to "Delete Room", @listing, method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-outline-danger rounded-3" %>
+        </div>
+      </div>
     </div>
   <% end %>
 
   <%# NEW: the state of the listing, and the actions available in that state %>
   <p class="mb-2">Status: <span class="badge bg-secondary"><%= @listing.status.humanize %></span></p>
-
-  <% if @listing.hosted_by?(current_user) || current_user.moderator? %>
-    <div class="d-flex gap-2 mb-4">
-      <% if @listing.draft? %>
-        <%= button_to "Publish", listing_path(@listing), method: :patch,
-              params: { transition: "publish" },
-              class: "btn btn-sm btn-success rounded-3" %>
-      <% end %>
-
-      <% if @listing.reserved? %>
-        <%= button_to "Mark as Rented", listing_path(@listing), method: :patch,
-              params: { transition: "mark_as_rented" },
-              class: "btn btn-sm btn-dark rounded-3",
-              form: { data: { turbo_confirm: "Has the new housemate moved in?" } } %>
-      <% end %>
-
-      <% unless @listing.rented? || @listing.withdrawn? %>
-        <%= button_to "Withdraw", listing_path(@listing), method: :patch,
-              params: { transition: "withdraw" },
-              class: "btn btn-sm btn-outline-danger rounded-3",
-              form: { data: { turbo_confirm: "Withdraw this listing? Open applications will be rejected and it can't be published again." } } %>
-      <% end %>
-    </div>
-  <% end %>
 
   <div class="row g-5">
     <div class="col-md-8">
@@ -51,10 +46,20 @@
         </div>
       <% end %>
 
+      <!-- Textos Enriquecidos (Action Text) -->
       <div class="bg-light p-4 rounded-4 mb-4">
         <h3 class="h5 fw-bold mb-3">Description</h3>
-        <p class="text-muted"><%= @listing.description %></p>
+        <div class="text-muted"><%= @listing.description %></div>
       </div>
+      
+      <% if @listing.house_rules.present? %>
+        <div class="bg-white border p-4 rounded-4 mb-4">
+          <h3 class="h5 fw-bold mb-3 text-danger">House Rules</h3>
+          <div class="text-muted"><%= @listing.house_rules %></div>
+        </div>
+      <% end %>
+
+     
 
       <div class="row mt-4">
         <div class="col-md-6">
@@ -83,16 +88,16 @@
           <p class="text-muted mb-4">per month</p>
           
           <ul class="list-group list-group-flush text-start mb-4">
+          <li class="list-group-item d-flex justify-content-between px-0"><strong>Hosted by:</strong><%= @listing.property.user.name %></li>
             <li class="list-group-item d-flex justify-content-between px-0"><strong>Deposit:</strong> $<%= @listing.deposit %></li>
             <li class="list-group-item d-flex justify-content-between px-0"><strong>Available:</strong> <%= @listing.available_from.strftime("%b %d, %Y") %></li>
             <li class="list-group-item d-flex justify-content-between px-0"><strong>Minimum stay:</strong> <%= @listing.minimum_stay_days %> days</li>
           </ul>
           
-          <% if @listing.property.user != current_user && @listing.status == "published" %>
+          <% if @listing.property.user != current_user && @listing.status == "published" && !current_user.applications.exists?(listing_id: @listing.id) %>
             <% application = @application || Application.new %>
             <%= form_with model: [@listing, application], class: "row g-3 text-start mt-2" do |f| %>
-              
-              <!-- Caja de Errores de Validación -->
+
               <% if application.errors.any? %>
                 <div class="col-12">
                   <div class="alert alert-danger py-2 mb-0 rounded-3 small">
@@ -128,30 +133,6 @@
     </div>
   </div>
 
-<hr class="my-5">
-<h3 class="fw-bold mb-4">Property Reviews</h3>
-<% target_property = defined?(@listing) ? @listing.property : @property %>
 
-<% if target_property.reviews.any? %>
-  <div class="row g-4">
-    <% target_property.reviews.each do |review| %>
-      <div class="col-md-6">
-        <div class="card border-0 bg-light rounded-4 h-100 p-3">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="fw-semibold"><%= review.user.name %></span>
-            <span class="text-warning">
-              <% review.rating.times do %><i class="bi bi-star-fill"></i><% end %>
-              <% (5 - review.rating).times do %><i class="bi bi-star"></i><% end %>
-            </span>
-          </div>
-          <p class="text-muted small mb-0">"<%= review.comment %>"</p>
-          <span class="text-muted" style="font-size: 0.75rem;"><%= review.created_at.strftime("%B %Y") %></span>
-        </div>
-      </div>
-    <% end %>
-  </div>
-<% else %>
-  <p class="text-muted">No reviews yet for this property.</p>
-<% end %>
 
 </main>

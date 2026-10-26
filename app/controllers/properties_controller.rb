@@ -18,7 +18,7 @@ class PropertiesController < ApplicationController
         @property.user = current_user
 
         if @property.save
-            redirect_to @property, notice: "Property created successfully."
+            redirect_to properties_path, notice: "Property created successfully."
         else
             flash.now[:alert] = "Please fix the errors below"
             render :new, status: :unprocessable_entity

@@ -1,7 +1,7 @@
 class ReviewsController < ApplicationController
   def create
     @review = Review.new(review_params)
-    @review.user = current_user # Asume que tu modelo Review tiene belongs_to :user
+    @review.user = current_user 
     
     if @review.save
       redirect_to @review.property, notice: "Review submitted successfully."
@@ -20,7 +20,7 @@ class ReviewsController < ApplicationController
     if @review.update(review_params)
       redirect_to property_path(@review.property), notice: "Review updated successfully."
     else
-      # Si hay error de validación, vuelve a mostrar el formulario
+
       render :edit, status: :unprocessable_entity
     end
   end
@@ -29,7 +29,6 @@ class ReviewsController < ApplicationController
     @review = Review.find(params[:id])
     property = @review.property
     
-    # Solo el creador de la reseña o un moderador pueden borrarla
     if @review.user == current_user || current_user.name.downcase.include?("mod")
       @review.destroy
       redirect_to property_path(property), notice: "Review deleted successfully.", status: :see_other

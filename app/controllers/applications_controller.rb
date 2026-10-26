@@ -29,17 +29,29 @@ class ApplicationsController < ApplicationController
     def update
         return change_status if params[:transition].present?   # NEW
 
-        if @application.update(application_params)
-            redirect_to @application, notice: "Application status updated."
+        new_status = params.dig(:application, :status)
+        success = case new_status
+                  when "shortlisted" then @application.shortlist
+                  when "accepted" then @application.accept
+                  when "rejected" then @application.reject
+                  when "withdrawn" then @application.withdraw
+                  else @application.update(application_params)
+                  end
+
+        if success
+            redirect_to @application, notice: "Application status updated.", status: :see_other
         else
-            flash.now[:alert] = "Please fix the errors below"
+            flash.now[:alert] = @application.errors.full_messages.to_sentence.presence || "Could not update status."
             render :edit, status: :unprocessable_entity
         end
     end
 
     def destroy
-        @application.destroy
+        if @application.withdraw
         redirect_to applications_path, notice: "Application withdrawn successfully", status: :see_other
+        else
+            redirect_to application_path, alert: @application.errors.full_messages.to_sentence, status: :see_other
+        end
     end
 
     private
