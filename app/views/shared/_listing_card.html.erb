@@ -1,9 +1,16 @@
 <div class="card h-100 shadow-sm border">
   <% if listing.photos.attached? %>
-    <%= image_tag listing.photos.first.variant(resize_to_limit: [400, 300]), class: "card-img-top", style: "height: 200px; object-fit: cover;" %>
-  <% elsif listing.listing_photos.any? %>
-    <img src="<%= listing.listing_photos.first.url %>" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Listing Image">
-  <% else %>
+    <% if listing.photos.attached? %>
+
+      <%= image_tag listing.photos.first.variant(resize_to_limit: [400, 300]), class: "card-img-top", style: "height: 200px; object-fit: cover;" %>
+
+    <% else %>
+
+      <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center"style="height: 200px;">
+        No Image
+      </div>
+
+    <% end %>
     <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">No Image</div>
   <% end %>
   

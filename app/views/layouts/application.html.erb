@@ -49,7 +49,7 @@
               <!-- POR FAVOR REVISAR -->
               <%= form_with url: switch_user_path, method: :post, class: "d-flex align-items-center ms-3" do |f| %>
                 <%= f.collection_select :user_id, User.all, :id, :name, 
-                { selected: current_user.id }, 
+                { selected: current_user&.id }, 
                 { class: "form-select form-select-sm border-secondary", onchange: "this.form.submit();" } %>
               <% end %>
 

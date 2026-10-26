@@ -19,6 +19,7 @@ class Property < ApplicationRecord
 
   validates :title, presence: true, length: { maximum: 150 }
   validates :address, presence: true, length: { maximum: 255 }
-  validates :bedrooms,  presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :property_type, presence: true
+  validates :bedrooms, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :bathrooms, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 end

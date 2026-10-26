@@ -2,32 +2,53 @@
   <div class="row g-4 mb-4">
     <div class="col-md-12">
       <%= f.label :title, class: "form-label fw-bold small text-muted text-uppercase" %>
-      <%= f.text_field :title, class: "form-control bg-light border-0 py-2", placeholder: "e.g., Cozy House in Ñuñoa" %>
+      <%= f.text_field :title, class: "form-control bg-light border-0 py-2", placeholder: "e.g., Cozy House in Ñuñoa", required: true %>
+      <% property.errors.full_messages_for(:title).each do |message| %>
+        <div class="text-danger small mt-1"><%= message %></div>
+      <% end %>
     </div>
-    
+
     <div class="col-md-8">
       <%= f.label :address, class: "form-label fw-bold small text-muted text-uppercase" %>
-      <%= f.text_field :address, class: "form-control bg-light border-0 py-2", placeholder: "Street Name 123" %>
+      <%= f.text_field :address, class: "form-control bg-light border-0 py-2", placeholder: "Street Name 123", required: true %>
+      <% property.errors.full_messages_for(:address).each do |message| %>
+        <div class="text-danger small mt-1"><%= message %></div>
+      <% end %>
     </div>
-    
+
     <div class="col-md-4">
       <%= f.label :neighborhood_id, "Neighborhood", class: "form-label fw-bold small text-muted text-uppercase" %>
-      <%= f.collection_select :neighborhood_id, Neighborhood.all, :id, :name, { prompt: "Select area" }, { class: "form-select bg-light border-0 py-2" } %>
+      <%= f.collection_select :neighborhood_id, Neighborhood.all, :id, :name, { prompt: "Select area" }, { class: "form-select bg-light border-0 py-2", required: true } %>
+      <% property.errors.full_messages_for(:neighborhood).each do |message| %>
+        <div class="text-danger small mt-1"><%= message %></div>
+      <% end %>
+      <% property.errors.full_messages_for(:neighborhood_id).each do |message| %>
+        <div class="text-danger small mt-1"><%= message %></div>
+      <% end %>
     </div>
 
     <div class="col-md-4">
       <%= f.label :property_type, "Property Type", class: "form-label fw-bold small text-muted text-uppercase" %>
-      <%= f.select :property_type, [["House", "house"], ["Apartment", "apartment"], ["Loft", "loft"]], { prompt: "Select type" }, class: "form-select bg-light border-0 py-2" %>
+      <%= f.select :property_type, [["House", "house"], ["Apartment", "apartment"], ["Other", "other"]], { prompt: "Select type" }, class: "form-select bg-light border-0 py-2", required: true %>
+      <% property.errors.full_messages_for(:property_type).each do |message| %>
+        <div class="text-danger small mt-1"><%= message %></div>
+      <% end %>
     </div>
-    
+
     <div class="col-md-4">
       <%= f.label :bedrooms, class: "form-label fw-bold small text-muted text-uppercase" %>
-      <%= f.number_field :bedrooms, class: "form-control bg-light border-0 py-2" %>
+      <%= f.number_field :bedrooms, class: "form-control bg-light border-0 py-2", required: true %>
+      <% property.errors.full_messages_for(:bedrooms).each do |message| %>
+        <div class="text-danger small mt-1"><%= message %></div>
+      <% end %>
     </div>
-    
+
     <div class="col-md-4">
       <%= f.label :bathrooms, class: "form-label fw-bold small text-muted text-uppercase" %>
-      <%= f.number_field :bathrooms, class: "form-control bg-light border-0 py-2" %>
+      <%= f.number_field :bathrooms, class: "form-control bg-light border-0 py-2", required: true %>
+      <% property.errors.full_messages_for(:bathrooms).each do |message| %>
+        <div class="text-danger small mt-1"><%= message %></div>
+      <% end %>
     </div>
 
     <div class="col-md-6 mt-4">
@@ -41,7 +62,7 @@
         <% end %>
       </div>
     </div>
-    
+
     <div class="col-md-6 mt-4">
       <label class="form-label fw-bold small text-muted text-uppercase">Shared Spaces</label>
       <div class="d-flex flex-wrap gap-3">
