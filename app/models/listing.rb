@@ -34,6 +34,33 @@ class Listing < ApplicationRecord
 
   validate  :available_from_not_in_past, if: :will_save_change_to_available_from?
 
+  def publish
+    unless draft?
+      errors.add(:status, "can only publish a listing while in draft status")
+      return false
+    end
+
+    update(status: :published, published_at: Time.current)
+  end
+
+  def withdraw
+    unless published?
+      errors.add(:status, "can only withdraw a listing while in published status")
+      return false
+    end
+
+    update(status: :withdrawn)
+  end
+
+  def mark_as_rented
+    unless reserved?
+      errors.add(:status, "can only mark a listing as rented while in reserved status")
+      return false
+    end
+
+    update(status: :rented)
+  end
+
   private
 
   def available_from_not_in_past

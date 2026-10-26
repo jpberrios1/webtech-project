@@ -4,6 +4,8 @@ class Application < ApplicationRecord
 
   has_many :visits, dependent: :destroy
 
+ attr_reader :rejected_applications
+
   enum :status, {
     pending: "pending",
     shortlisted: "shortlisted",
@@ -23,6 +25,40 @@ class Application < ApplicationRecord
   validate  :seeker_is_not_host, on: :create
   validate  :listing_is_published, on: :create
   validate  :only_one_accepted_application
+
+  def accept
+    unless pending? || shortlisted?
+      errors.add(:status, "can only accept an application while in pending or shortlisted status")
+      return false
+    end
+
+    unless listing.published?
+      errors.add(:listing, "must be published to accept an application")
+      return false
+    end
+
+    transaction do
+      update!(status: :accepted)
+      @rejected_applications = listing.applications.where(status: [ :pending, :shortlisted ]).where.not(id: id).to_a
+      @rejected_applications.each do |app|
+        app.update!(status: :rejected)
+        app.cancel_open_visits!
+      end
+      listing.update!(status: :reserved)
+    end
+
+    true
+
+  rescue ActiveRecord::RecordInvalid => e
+    errors.add(:base, "Failed to accept application: #{e.message}")
+    false
+  end
+
+  def cancel_open_visits!
+    visits.where(status: [ :proposed, :confirmed ]).each do |visit|
+      visit.update!(status: :cancelled)
+    end
+  end
 
   private
 

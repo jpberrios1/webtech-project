@@ -12,15 +12,15 @@ class Visit < ApplicationRecord
 
   validates :scheduled_at, presence: true
 
-  validate :scheduled_at_after_application_created
+  validate :scheduled_at_not_in_past, if: :will_save_change_to_scheduled_at?
 
   private
 
-  def scheduled_at_after_application_created
-    return if scheduled_at.nil? || application.nil?
+  def scheduled_at_not_in_past
+    return if scheduled_at.blank?
 
-    if scheduled_at <= application.created_at
-      errors.add(:scheduled_at, "must be after the application was created")
+    if scheduled_at < Time.current
+      errors.add(:scheduled_at, "cant be in the past, choose a future date")
     end
   end
 end
