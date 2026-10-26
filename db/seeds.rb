@@ -211,12 +211,14 @@ LISTINGS = {
                   has_private_bathroom: false, minimum_stay_days: 30, available_from: Date.current + 40.days,
                   description: "Will publish once the room is painted." }
   },
+  # Edge: withdrawn while still a draft (the host changed their mind before publishing)
   house_draft: {
     property: :house, created: 9.days.ago, withdrawn: 8.days.ago,
     attributes: { title: "Basement Room", monthly_rent: 280.0, deposit: 280.0, is_furnished: false,
                   has_private_bathroom: false, minimum_stay_days: 30, available_from: Date.current + 20.days,
                   description: "Decided to keep it as a home office." }
   },
+  # Edge: withdrawn while reserved. Carlos had been accepted; withdrawing rejects him too.
   attic: {
     property: :townhouse, created: 18.days.ago, published: 18.days.ago, withdrawn: 9.days.ago,
     attributes: { title: "Attic Room in Barrio Italia", monthly_rent: 360.0, deposit: 360.0, is_furnished: true,
@@ -231,9 +233,6 @@ LISTINGS = {
   }
 }
 
-# Each application: when it was sent, and (if it happened) when it was shortlisted,
-# accepted or withdrawn by the seeker. "rejected" is never written here: it only
-# happens when another applicant is accepted or the listing is withdrawn.
 APPLICATIONS = {
   app1: { listing: :quiet, seeker: :bob, message: "I love Ñuñoa, moving in ASAP!",
           desired_move_in_date: Date.current + 15.days, length_of_stay_days: 180,
@@ -278,9 +277,10 @@ APPLICATIONS = {
                  applied: 9.days.ago },
 
   # Hosts applying to other people's rooms
+  # Rejected directly by the host (Bob), without accepting anyone
   alice_italia:      { listing: :italia_room, seeker: :alice, message: "Renting out my flat and moving closer to work.",
                        desired_move_in_date: Date.current + 20.days, length_of_stay_days: 270,
-                       applied: 5.days.ago },
+                       applied: 5.days.ago, rejected: 1.day.ago },
   joaquin_italia:    { listing: :italia_room, seeker: :joaquin, message: "I bike everywhere, the garden storage is perfect.",
                        desired_move_in_date: Date.current + 15.days, length_of_stay_days: 180,
                        applied: 4.days.ago, shortlisted: 3.days.ago },
@@ -311,8 +311,10 @@ VISITS = {
   # creates a new visit, as in our decisions document)
   visit_app2_first:    { application: :app2, scheduled_at: 2.days.ago.change(hour: 10),
                          proposed: (4.days + 2.hours).ago, cancelled: (4.days + 1.hour).ago },
-  visit_app2:          { application: :app2, scheduled_at: 1.day.from_now.change(hour: 18),
-                         proposed: 4.days.ago, confirmed: 3.days.ago },
+  visit_app2: { application: :app2, scheduled_at: 2.days.ago.change(hour: 10),
+                proposed: (4.days + 2.hours).ago,
+                rescheduled: { at: (4.days + 1.hour).ago, to: 1.day.from_now.change(hour: 18) },
+                confirmed: 3.days.ago },
   visit_old_lastarria: { application: :app_old_lastarria, scheduled_at: 415.days.ago.change(hour: 12),
                          proposed: 418.days.ago, confirmed: 417.days.ago, completed: true },
   visit_nunoa:         { application: :app_nunoa, scheduled_at: 305.days.ago.change(hour: 19),
@@ -328,6 +330,8 @@ VISITS = {
                             proposed: 2.days.ago },  # still waiting for Joaquín to confirm
   visit_ignacia_italia:   { application: :ignacia_italia, scheduled_at: 137.days.ago.change(hour: 18),
                             proposed: 139.days.ago, confirmed: 138.days.ago, completed: true },
+  visit_carlos_attic:     { application: :carlos_attic, scheduled_at: 13.days.ago.change(hour: 19),
+                            proposed: (15.days - 1.hour).ago, confirmed: 14.days.ago, completed: true },
   visit_karen_cerro:      { application: :karen_cerro, scheduled_at: 31.days.ago.change(hour: 12),
                             proposed: 33.days.ago, confirmed: 32.days.ago, completed: true }
 }
@@ -445,18 +449,26 @@ APPLICATIONS.each do |key, data|
       **data.slice(:message, :desired_move_in_date, :length_of_stay_days)
     )
   end
-  happened_at(data[:shortlisted]) { applications[key].update!(status: :shortlisted) }
-  happened_at(data[:withdrawn])   { applications[key].update!(status: :withdrawn) }
+  happened_at(data[:shortlisted]) { must(applications[key], :shortlist) }
   happened_at(data[:accepted])    { must(applications[key], :accept) }
+  happened_at(data[:rejected])    { must(applications[key], :reject) }
+  happened_at(data[:withdrawn])   { must(applications[key], :withdraw) }
 end
 
 VISITS.each do |key, data|
   happened_at(data[:proposed]) do
     visits[key] = applications.fetch(data[:application]).visits.create!(scheduled_at: data[:scheduled_at])
   end
-  happened_at(data[:confirmed]) { visits[key].update!(status: :confirmed) }
-  happened_at(data[:cancelled]) { visits[key].update!(status: :cancelled) }
-  happened_at(data[:completed] && data[:scheduled_at] + 1.hour) { visits[key].update!(status: :completed) }
+  happened_at(data.dig(:rescheduled, :at)) do
+    new_visit = visits[key].reschedule(data[:rescheduled][:to])
+    raise "Seed failed: could not reschedule #{key}: #{visits[key].errors.full_messages.to_sentence}" unless new_visit
+ 
+    visits[key] = new_visit # the events after this one (confirm, complete) apply to the new visit
+  end
+  happened_at(data[:confirmed]) { must(visits[key], :confirm) }
+  happened_at(data[:completed] && (data.dig(:rescheduled, :to) || data[:scheduled_at]) + 1.hour) do
+    must(visits[key], :complete)
+  end
 end
 
 REVIEWS.each do |data|

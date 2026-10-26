@@ -17,10 +17,21 @@ class Report < ApplicationRecord
     actioned: "actioned"
   }
 
+  validate :listing_can_be_reported, on: :create
   validate :reviewed_at_after_report_created
   validate :review_data_matches_status
 
   private
+
+  def listing_can_be_reported
+    return if listing.nil? || user.nil?
+
+    if listing.hosted_by?(user)
+      errors.add(:listing, "is yours, you can't report your own listing")
+    elsif !listing.visible_to?(user)
+      errors.add(:listing, "is not available")
+    end
+  end
 
   def reviewed_at_after_report_created
     return if reviewed_at.blank? || created_at.blank?

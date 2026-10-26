@@ -63,10 +63,7 @@ class Listing < ApplicationRecord
     end
 
     transaction do
-      applications.where(status: [ :pending, :shortlisted, :accepted ]).each do |app|
-        app.update!(status: :rejected)
-        app.cancel_open_visits!
-      end
+      applications.where(status: [ :pending, :shortlisted, :accepted ]).each(&:reject_and_cancel_visits!)
       update!(status: :withdrawn)
     end
 
