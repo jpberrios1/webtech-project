@@ -1,13 +1,12 @@
 class AmenitiesController < ApplicationController
-
-    before_action :set_amenity, only: [:show, :edit, :update, :destroy]
+    before_action :set_amenity, only: [ :show, :edit, :update, :destroy ]
 
     def index
         @amenities = Amenity.order(:name)
     end
 
     def show
-       #@neighborhood = Neighborhood.find(params[:id])
+      # @neighborhood = Neighborhood.find(params[:id])
     end
 
     def new
@@ -43,7 +42,7 @@ class AmenitiesController < ApplicationController
     end
 
     private
-    
+
     def set_amenity
         @amenity = Amenity.find(params[:id])
     end

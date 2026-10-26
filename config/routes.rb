@@ -14,14 +14,14 @@ Rails.application.routes.draw do
   resources :reviews
 
   resources :properties do
-      resources :listings, only: [:new, :create]
+      resources :listings, only: [ :new, :create ]
   end
 
-  resources :listings, except: [:new, :create] do
-      resources :applications, only: [:create]
+  resources :listings, except: [ :new, :create ] do
+      resources :applications, only: [ :create ]
   end
 
-  resources :applications, except: [:new, :create]
+  resources :applications, except: [ :new, :create ]
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
