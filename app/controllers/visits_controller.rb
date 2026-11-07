@@ -44,13 +44,13 @@ class VisitsController < ApplicationController
         success = if new_date.present? && new_date.to_time != @visit.scheduled_at
                 @visit = @visit.reschedule(new_date)
                 @visit.present?
-            elsif new_status == "confirmed"
+        elsif new_status == "confirmed"
                 @visit.confirm
-            elsif new_status == "completed"
+        elsif new_status == "completed"
                 @visit.complete
-            else
+        else
                 @visit.update(visit_params)
-            end
+        end
 
         if success
             redirect_to application_path(@visit.application), notice: "Visit rescheduled. The applicant has to confirm the new date.", status: :see_other
