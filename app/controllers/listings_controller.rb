@@ -1,4 +1,5 @@
 class ListingsController < ApplicationController
+  allow_unauthenticated_access only: [:index, :show]
   before_action :set_listing, only: [ :show, :edit, :update, :destroy ]
   before_action :require_visible, only: [ :show ]
 
@@ -38,7 +39,7 @@ class ListingsController < ApplicationController
     success = case new_status
               when "published" then @listing.publish
               when "withdrawn" then @listing.withdraw
-              when "rented" then @listings.mark_as_rented
+              when "rented" then @listing.mark_as_rented
               else @listing.update(listing_params)
               end
 

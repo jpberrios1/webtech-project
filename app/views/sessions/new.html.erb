@@ -1,0 +1,48 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4">Welcome back!</h2>
+          <p class="text-center text-muted mb-4">
+            Sign in to your Roomies account.
+          </p>
+
+          <%= form_with url: session_path do |form| %>
+            <div class="mb-3">
+              <%= form.label :email_address, "Email address", class: "form-label" %>
+              <%= form.email_field :email_address,
+                  required: true,
+                  autofocus: true,
+                  class: "form-control",
+                  autocomplete: "email" %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :password, "Password", class: "form-label" %>
+              <%= form.password_field :password,
+                  required: true,
+                  class: "form-control",
+                  autocomplete: "current-password" %>
+            </div>
+
+            <div class="d-grid mb-3">
+              <%= form.submit "Log In", class: "btn btn-mio" %>
+            </div>
+          <% end %>
+
+          <div class="text-center">
+            <%= link_to "Forgot your password?", new_password_path %>
+          </div>
+
+          <hr>
+
+          <p class="text-center mb-0">
+            Don't have an account?
+            <%= link_to "Sign Up", new_user_path %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

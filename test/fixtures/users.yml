@@ -1,7 +1,15 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
-  name: MyString
+  name: Ana Test
+  email_address: ana.test@example.com
+  password_digest: $2a$12$WIjdLC8cUqb0B1MuHFsgE..na/gKjKDBljUg2sEUA9DMXOTBWjnse
+  phone: "912345678"
+  role: member
+  bio: Usuario de prueba
 
 two:
-  name: MyString
+  name: Otro Usuario
+  email_address: otro.test@example.com
+  password_digest: $2a$12$WIjdLC8cUqb0B1MuHFsgE..na/gKjKDBljUg2sEUA9DMXOTBWjnse
+  phone: "987654321"
+  role: member
+  bio: Segundo usuario de prueba

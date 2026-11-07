@@ -1,9 +1,10 @@
+
 <main class="container py-5">
   <div class="mb-4 text-start">
     <%= link_to "&larr; Back to Search".html_safe, listings_path, class: "text-decoration-none text-secondary fw-semibold hover-accent" %>
   </div>
 
-  <% if @listing.property.user == current_user || current_user.name.downcase.include?("mod") %>
+  <% if authenticated? && (@listing.property.user == current_user || current_user.moderator?) %>
     <div class="card shadow-sm border-0 rounded-4 mb-4 bg-light">
       <div class="card-body p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
@@ -12,13 +13,15 @@
         </div>
         <div class="d-flex gap-2 flex-wrap">
           <%= link_to "Edit Room", edit_listing_path(@listing), class: "btn btn-sm btn-outline-primary rounded-3" %>
-          
+
           <% if @listing.status == "draft" %>
             <%= button_to "Publish", listing_path(@listing), method: :patch, params: { listing: { status: "published" } }, class: "btn btn-sm btn-success rounded-3" %>
           <% end %>
+
           <% if @listing.status == "published" || @listing.status == "reserved" %>
             <%= button_to "Withdraw", listing_path(@listing), method: :patch, params: { listing: { status: "withdrawn" } }, class: "btn btn-sm btn-warning rounded-3", data: { turbo_confirm: "Are you sure?" } %>
           <% end %>
+
           <% if @listing.status == "reserved" %>
             <%= button_to "Mark as Rented", listing_path(@listing), method: :patch, params: { listing: { status: "rented" } }, class: "btn btn-sm btn-success rounded-3" %>
           <% end %>
@@ -29,17 +32,16 @@
     </div>
   <% end %>
 
-  <%# NEW: the state of the listing, and the actions available in that state %>
   <p class="mb-2">Status: <span class="badge bg-secondary"><%= @listing.status.humanize %></span></p>
 
   <div class="row g-5">
     <div class="col-md-8">
       <h1 class="display-5"><%= @listing.title %></h1>
       <p class="lead text-muted">
-        <%= link_to @listing.property.title, property_path(@listing.property), class: "text-decoration-none accent-roomie" %> in 
+        <%= link_to @listing.property.title, property_path(@listing.property), class: "text-decoration-none accent-roomie" %> in
         <%= @listing.property.neighborhood&.name %>, <%= @listing.property.neighborhood&.city %>
       </p>
-      
+
       <% if @listing.photos.attached? %>
         <div class="row g-2 mb-4">
           <% @listing.photos.each_with_index do |photo, index| %>
@@ -52,12 +54,11 @@
         </div>
       <% end %>
 
-      <!-- Textos Enriquecidos (Action Text) -->
       <div class="bg-light p-4 rounded-4 mb-4">
         <h3 class="h5 fw-bold mb-3">Description</h3>
         <div class="text-muted"><%= @listing.description %></div>
       </div>
-      
+
       <% if @listing.house_rules.present? %>
         <div class="bg-white border p-4 rounded-4 mb-4">
           <h3 class="h5 fw-bold mb-3 text-danger">House Rules</h3>
@@ -65,162 +66,153 @@
         </div>
       <% end %>
 
-     
-
       <div class="row mt-4">
         <div class="col-md-6">
           <h4 class="h6 fw-bold text-uppercase text-secondary">Amenities</h4>
           <ul class="list-group list-group-flush bg-transparent">
             <% @listing.property.amenities.each do |amenity| %>
-              <li class="list-group-item bg-transparent text-muted border-0 py-1"><i class="bi bi-check2 text-success me-2"></i><%= amenity.name %></li>
+              <li class="list-group-item bg-transparent text-muted border-0 py-1">
+                <i class="bi bi-check2 text-success me-2"></i><%= amenity.name %>
+              </li>
             <% end %>
           </ul>
         </div>
+
         <div class="col-md-6">
           <h4 class="h6 fw-bold text-uppercase text-secondary">Shared Spaces</h4>
           <ul class="list-group list-group-flush bg-transparent">
             <% @listing.property.shared_spaces.each do |space| %>
-              <li class="list-group-item bg-transparent text-muted border-0 py-1"><i class="bi bi-house text-primary me-2"></i><%= space.name %></li>
+              <li class="list-group-item bg-transparent text-muted border-0 py-1">
+                <i class="bi bi-house text-primary me-2"></i><%= space.name %>
+              </li>
             <% end %>
           </ul>
         </div>
       </div>
+
       <hr class="my-5">
-        <h3 class="fw-bold mb-4">Property Reviews</h3>
+      <h3 class="fw-bold mb-4">Property Reviews</h3>
 
-        <% if @listing.property.reviews.any? %>
-          <div class="row g-4 mb-5">
-            <% @listing.property.reviews.each do |review| %>
-              <div class="col-md-6">
-                <div class="card border-0 bg-light rounded-4 h-100 p-3">
-
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <div>
-                      <span class="fw-semibold">
-                        <%= review.user.name %>
-                      </span>
-                    </div>
-
-                    <span class="text-warning">
-                      <% review.rating.times do %>
-                        <i class="bi bi-star-fill"></i>
-                      <% end %>
-
-                      <% (5 - review.rating).times do %>
-                        <i class="bi bi-star"></i>
-                      <% end %>
-                    </span>
+      <% if @listing.property.reviews.any? %>
+        <div class="row g-4 mb-5">
+          <% @listing.property.reviews.each do |review| %>
+            <div class="col-md-6">
+              <div class="card border-0 bg-light rounded-4 h-100 p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div>
+                    <span class="fw-semibold"><%= review.user.name %></span>
                   </div>
 
-                  <p class="text-muted small mb-0">
-                    "<%= review.comment %>"
-                  </p>
-
-                  <span class="text-muted" style="font-size: 0.75rem;">
-                    <%= review.created_at.strftime("%B %Y") %>
+                  <span class="text-warning">
+                    <% review.rating.times do %>
+                      <i class="bi bi-star-fill"></i>
+                    <% end %>
+                    <% (5 - review.rating).times do %>
+                      <i class="bi bi-star"></i>
+                    <% end %>
                   </span>
-
                 </div>
-              </div>
-            <% end %>
-  </div>
 
-<% else %>
-  <p class="text-muted mb-5">
-    No reviews yet for this property.
-  </p>
-<% end %>
-  </div>
+                <p class="text-muted small mb-0">"<%= review.comment %>"</p>
+                <span class="text-muted" style="font-size: 0.75rem;">
+                  <%= review.created_at.strftime("%B %Y") %>
+                </span>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-muted mb-5">No reviews yet for this property.</p>
+      <% end %>
+    </div>
 
     <div class="col-md-4">
       <div class="card shadow-sm border-0 rounded-4 sticky-top" style="top: 20px;">
         <div class="card-body p-4 text-center">
           <h3 class="card-title display-6 accent-roomie">$<%= @listing.monthly_rent %></h3>
           <p class="text-muted mb-4">per month</p>
-          
+
           <ul class="list-group list-group-flush text-start mb-4">
-          <li class="list-group-item d-flex justify-content-between px-0"><strong>Hosted by:</strong><%= @listing.property.user.name %></li>
-            <li class="list-group-item d-flex justify-content-between px-0"><strong>Deposit:</strong> $<%= @listing.deposit %></li>
-            <li class="list-group-item d-flex justify-content-between px-0"><strong>Available:</strong> <%= @listing.available_from.strftime("%b %d, %Y") %></li>
-            <li class="list-group-item d-flex justify-content-between px-0"><strong>Minimum stay:</strong> <%= @listing.minimum_stay_days %> days</li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <strong>Hosted by:</strong><%= @listing.property.user.name %>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <strong>Deposit:</strong> $<%= @listing.deposit %>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <strong>Available:</strong> <%= @listing.available_from.strftime("%b %d, %Y") %>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <strong>Minimum stay:</strong> <%= @listing.minimum_stay_days %> days
+            </li>
           </ul>
-          
+
           <%= turbo_frame_tag "application_block" do %>
+            <% if @listing.property.user != current_user && @listing.status == "published" %>
+              <% if authenticated? %>
+                <% application = @application || current_user.applications.find_by(listing_id: @listing.id) || Application.new %>
 
-          <% if @listing.property.user != current_user && @listing.status == "published" %>
-
-            <% application = @application || current_user.applications.find_by(listing_id: @listing.id) || Application.new %>
-
-            <% if application.persisted? %>
-
-              <div class="alert alert-success text-start mt-3">
-                <strong>Application sent!</strong>
-                <p class="mb-0"> Status: <%= application.status.humanize %> </p>
-              </div>
-
-            <% else %>
-
-              <%= form_with model: [@listing, application], class: "row g-3 text-start mt-2" do |f| %>
-
-                <% if application.errors.any? %>
-                  <div class="col-12">
-                    <div class="alert alert-danger py-2 mb-0 rounded-3 small">
-                      <ul class="mb-0 ps-3">
-                        <% application.errors.full_messages.each do |msg| %>
-                          <li><%= msg %></li>
-                        <% end %>
-                      </ul>
-                    </div>
+                <% if application.persisted? %>
+                  <div class="alert alert-success text-start mt-3">
+                    <strong>Application sent!</strong>
+                    <p class="mb-0">Status: <%= application.status.humanize %></p>
                   </div>
+                <% else %>
+                  <%= form_with model: [@listing, application], class: "row g-3 text-start mt-2" do |f| %>
+                    <% if application.errors.any? %>
+                      <div class="col-12">
+                        <div class="alert alert-danger py-2 mb-0 rounded-3 small">
+                          <ul class="mb-0 ps-3">
+                            <% application.errors.full_messages.each do |msg| %>
+                              <li><%= msg %></li>
+                            <% end %>
+                          </ul>
+                        </div>
+                      </div>
+                    <% end %>
+
+                    <div class="col-12">
+                      <%= f.label :message, "Introduction Message", class: "form-label fw-bold small text-muted" %>
+                      <%= f.text_area :message, rows: 2, class: "form-control border-0", placeholder: "Tell the host about yourself...", required: true %>
+
+                      <% application.errors.full_messages_for(:message).each do |message| %>
+                        <div class="text-danger small mt-1"><%= message %></div>
+                      <% end %>
+                    </div>
+
+                    <div class="col-6">
+                      <%= f.label :desired_move_in_date, "Move-in Date", class: "form-label fw-bold small text-muted" %>
+                      <%= f.date_field :desired_move_in_date, class: "form-control border-0", required: true %>
+
+                      <% application.errors.full_messages_for(:desired_move_in_date).each do |message| %>
+                        <div class="text-danger small mt-1"><%= message %></div>
+                      <% end %>
+                    </div>
+
+                    <div class="col-6">
+                      <%= f.label :length_of_stay_days, "Stay (Days)", class: "form-label fw-bold small text-muted" %>
+                      <%= f.number_field :length_of_stay_days, class: "form-control border-0", min: 1, required: true %>
+
+                      <% application.errors.full_messages_for(:length_of_stay_days).each do |message| %>
+                        <div class="text-danger small mt-1"><%= message %></div>
+                      <% end %>
+                    </div>
+
+                    <div class="col-12 mt-3">
+                      <%= f.submit "Apply Now", class: "btn btn-mio w-100 py-2 rounded-3" %>
+                    </div>
+                  <% end %>
                 <% end %>
-
-                <div class="col-12">
-                  <%= f.label :message,"Introduction Message", class: "form-label fw-bold small text-muted" %>
-
-                  <%= f.text_area :message, rows: 2, class: "form-control border-0", placeholder: "Tell the host about yourself...", required: true %>
-                  
-                  <% application.errors.full_messages_for(:message).each do |message| %>
-                    <div class="text-danger small mt-1">
-                      <%= message %>
-                    </div>
-                  <% end %>
-                </div>
-
-                <div class="col-6">
-                  <%= f.label :desired_move_in_date, "Move-in Date", class: "form-label fw-bold small text-muted" %>
-                  <%= f.date_field :desired_move_in_date, class: "form-control border-0", required: true %>
-                
-                  <% application.errors.full_messages_for(:desired_move_in_date).each do |message| %>
-                    <div class="text-danger small mt-1">
-                      <%= message %>
-                    </div>
-                  <% end %>
-                </div>
-
-                <div class="col-6">
-                  <%= f.label :length_of_stay_days, "Stay (Days)", class: "form-label fw-bold small text-muted" %>
-
-                  <%= f.number_field :length_of_stay_days, class: "form-control border-0", min: 1, required: true %>
-                  <% application.errors.full_messages_for(:length_of_stay_days).each do |message| %>
-                    <div class="text-danger small mt-1">
-                      <%= message %>
-                    </div>
-                  <% end %>
-                </div>
-
-                <div class="col-12 mt-3">
-                  <%= f.submit "Apply Now", class: "btn btn-mio w-100 py-2 rounded-3" %>
-                </div>
-
+              <% else %>
+                <p class="text-muted">
+                  Interested in this room?
+                  <%= link_to "Log in", new_session_path %> to apply.
+                </p>
               <% end %>
             <% end %>
           <% end %>
-        <% end %>
         </div>
       </div>
     </div>
   </div>
-
-
-
 </main>

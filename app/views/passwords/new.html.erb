@@ -1,0 +1,33 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-3">Forgot your password?</h2>
+
+          <p class="text-center text-muted mb-4">
+            Enter your email address and we will send you instructions to reset your password.
+          </p>
+
+          <%= form_with url: passwords_path do |form| %>
+            <div class="mb-3">
+              <%= form.label :email_address, "Email address", class: "form-label" %>
+              <%= form.email_field :email_address,
+                  required: true,
+                  class: "form-control",
+                  autocomplete: "email" %>
+            </div>
+
+            <div class="d-grid">
+              <%= form.submit "Send reset instructions", class: "btn btn-mio" %>
+            </div>
+          <% end %>
+
+          <p class="text-center mt-3 mb-0">
+            <%= link_to "Back to Log In", new_session_path %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

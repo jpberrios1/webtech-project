@@ -6,7 +6,10 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   root "roomies#home"
-  post "switch_user", to: "sessions#switch"
+  resource :session, only: %i[new create destroy]
+  resources :passwords, only: %i[new create edit update], param: :token
+  resources :users, only: [:new, :create]
+  resource :profile, only: [:show, :edit, :update]
 
   resources :neighborhoods
   resources :amenities

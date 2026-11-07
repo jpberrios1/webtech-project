@@ -3,11 +3,11 @@
 one:
   message: MyText
   desired_move_in_date: 2026-10-02
-  lenght_of_stay_days: 1
+  length_of_stay_days: 1
   status: MyString
 
 two:
   message: MyText
   desired_move_in_date: 2026-10-02
-  lenght_of_stay_days: 1
+  length_of_stay_days: 1
   status: MyString

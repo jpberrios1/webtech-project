@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_26_144008) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_07_211921) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -176,6 +176,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_144008) do
     t.index ["user_id"], name: "index_saved_listings_on_user_id"
   end
 
+  create_table "sessions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
   create_table "shared_spaces", force: :cascade do |t|
     t.string "name", limit: 80, null: false
     t.text "description"
@@ -192,6 +201,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_144008) do
     t.string "role", default: "member", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "bio"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
@@ -223,5 +233,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_144008) do
   add_foreign_key "reviews", "visits"
   add_foreign_key "saved_listings", "listings"
   add_foreign_key "saved_listings", "users"
+  add_foreign_key "sessions", "users"
   add_foreign_key "visits", "applications"
 end

@@ -39,20 +39,18 @@
               <%= link_to "Search", listings_path, class: "nav-link" %>
               <%= link_to "Properties", properties_path, class: "nav-link" %>
               <%= link_to "Neighborhoods", neighborhoods_path, class: "nav-link" %>
-              <%= link_to "Applications", applications_path, class: "nav-link" %>
-              <%= link_to "Search Rooms", listings_path, class: "nav-link fw-semibold" %>
-              <%= link_to "Amenities", amenities_path, class: "nav-link fw-semibold" %>
-              <a class="nav-link" href="#">Log In</a>
-              <a class="nav-link btn-mio" href="#">Sign Up</a>
+              <%= link_to "Amenities", amenities_path, class: "nav-link" %>
 
+              <% if authenticated? %>
+                <%= link_to "My Profile", profile_path, class: "nav-link" %>
 
-              <!-- POR FAVOR REVISAR -->
-              <%= form_with url: switch_user_path, method: :post, class: "d-flex align-items-center ms-3" do |f| %>
-                <%= f.collection_select :user_id, User.all, :id, :name, 
-                { selected: current_user&.id }, 
-                { class: "form-select form-select-sm border-secondary", onchange: "this.form.submit();" } %>
+                <%= button_to "Log Out", session_path,
+                    method: :delete,
+                    class: "btn btn-outline-light btn-sm" %>
+              <% else %>
+                <%= link_to "Log In", new_session_path, class: "nav-link" %>
+                <%= link_to "Sign Up", new_user_path, class: "btn btn-mio btn-sm" %>
               <% end %>
-
             </div>
           </div>
         </div>

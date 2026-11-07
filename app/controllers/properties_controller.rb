@@ -1,4 +1,5 @@
 class PropertiesController < ApplicationController
+    allow_unauthenticated_access only: [:index, :show]
     before_action :set_property, only: [ :show, :edit, :update, :destroy ]
 
     def index

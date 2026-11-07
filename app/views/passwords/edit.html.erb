@@ -1,0 +1,33 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4">Reset your password</h2>
+
+          <%= form_with url: password_path(params[:token]), method: :patch do |form| %>
+            <div class="mb-3">
+              <%= form.label :password, "New password", class: "form-label" %>
+              <%= form.password_field :password,
+                  required: true,
+                  class: "form-control",
+                  autocomplete: "new-password" %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :password_confirmation, "Confirm new password", class: "form-label" %>
+              <%= form.password_field :password_confirmation,
+                  required: true,
+                  class: "form-control",
+                  autocomplete: "new-password" %>
+            </div>
+
+            <div class="d-grid">
+              <%= form.submit "Reset password", class: "btn btn-mio" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
