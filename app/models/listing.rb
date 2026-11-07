@@ -32,7 +32,12 @@ class Listing < ApplicationRecord
   scope :with_neighborhood, -> { includes(:property, :neighborhood) }
   scope :with_room_details, -> { with_attached_photos.includes(property: [ :neighborhood, :amenities, :shared_spaces, { reviews: :user } ]) }
   scope :published_index, -> { published.with_neighborhood.with_attached_photos.order_soonest_first }
+  scope :over_rent, ->(amount) { where("monthly_rent >= ?", amount) }
+  scope :in_neighborhood, ->(neighborhood_id) { where(property_id: Property.where(neighborhood_id: neighborhood_id).select(:id)) }
+  scope :with_amenities, ->(amenity_ids) { where(property_id: PropertyAmenity.where(amenity_id: amenity_ids).select(:property_id)) }
+  scope :with_shared_spaces, ->(shared_space_ids) { where(property_id: PropertySharedSpace.where(shared_space_id: shared_space_ids).select(:property_id)) }
 
+  validates :property_id, presence: true
   validates :title, presence: true, length: { maximum: 150 }
   validates :status, presence: true
   validates :minimum_stay_days, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
