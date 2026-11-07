@@ -2,39 +2,50 @@ class ApplicationsController < ApplicationController
     before_action :set_application, only: [ :show, :edit, :update, :destroy ]
 
     def index
-        # @applications = Application.includes(listing: :property, seeker: nil).order(created_at: :desc)
-        @applications = Application.all
+        authorize Application
+        scoped_appliations = policy_scope(Application).includes(:seeker, listing: :property)
+
+        @applications = scoped_applications
+        @received_applications = scoped_applications.joins(listing: :property).where(properties: {user_id: current_user&.id})
+        @sent_applications = scoped_applications.where(seeker_id: current_user&.id)
     end
 
     def show
+        authorize @application
     end
 
     def create
-        @listing = Listing.find(params[:listing_id])
-        @application = @listing.applications.build(application_params)
+        @listing = Listing.find(params[:listing_id] || params.dig(:application, :listing_id))
+        @application = @listing.applications.new(application_params)
         @application.seeker = current_user
-        @application.status = "pending"
+        
+        authorize @application
 
         if @application.save
-            redirect_to @listing, notice: "Application sent successfully!"
+            redirect_to @listing, notice: "Application sent successfully!", status: :see_other
         else
-            flash.now[:alert] = "Please fix the errors below"
+            flash.now[:alert] = @application.errors.full_messages.to_sentence
             render "listings/show", status: :unprocessable_entity
         end
     end
 
     def edit
+        authorize @application, :update?
     end
 
     def update
-        return change_status if params[:transition].present?   # NEW
+        authorize @application, :update?
+
+        #return change_status if params[:transition].present?   
 
         new_status = params.dig(:application, :status)
         success = case new_status
                   when "shortlisted" then @application.shortlist
                   when "accepted" then @application.accept
                   when "rejected" then @application.reject
-                  when "withdrawn" then @application.withdraw
+                  when "withdrawn" then 
+                    authorize @application, :withdraw?
+                    @application.withdraw
                   else @application.update(application_params)
                   end
 
@@ -47,6 +58,8 @@ class ApplicationsController < ApplicationController
     end
 
     def destroy
+        authorize @application, :withdraw?
+        
         if @application.withdraw
         redirect_to applications_path, notice: "Application withdrawn successfully", status: :see_other
         else
@@ -57,7 +70,11 @@ class ApplicationsController < ApplicationController
     private
 
     def set_application
-        @application = Application.find(params[:id])
+        @application = policy_scope(Application).find_by(id: params[:id])
+        return if @application.present?
+
+        real_record = Application.find(params[:id])
+        authorize real_record, :show?
     end
 
     def application_params
@@ -94,39 +111,31 @@ class ApplicationsController < ApplicationController
         end
     end
 
-    # NEW
-    def deny(message)
-        redirect_back fallback_location: application_path(@application), alert: message, status: :see_other
-    end
-
     def change_status
-        host   = @application.listing.hosted_by?(current_user)
-        seeker = @application.seeker == current_user
 
         case params[:transition]
         when "shortlist"
-            return deny("Only the host of this listing can shortlist applications.") unless host
-
+            authorize @application, :shortlist?
             finish(@application.shortlist, "Application shortlisted. You can now propose a visit.")
-        when "accept"
-            return deny("Only the host of this listing can accept applications.") unless host
 
+        when "accept"
+            authorize @application, :accept?
             if @application.accept
                 rejected = @application.rejected_applications.size
                 finish(true, "Application accepted. #{rejected} other application(s) were rejected and the listing is now reserved.")
             else
                 finish(false, nil)
             end
+
         when "reject"
-            return deny("Only the host of this listing can reject applications.") unless host
-
+            authorize @application, :reject?
             finish(@application.reject, "Application rejected.")
-        when "withdraw"
-            return deny("Only the applicant can withdraw this application.") unless seeker
 
+        when "withdraw"
+            authorize @application, :withdraw?
             finish(@application.withdraw, "Application withdrawn.")
         else
-            deny("Unknown action.")
+            redirect_back fallback_location: application_path(@application), alert: "Unknown action.", status: :see_other
         end
     end
 end

@@ -2,22 +2,26 @@ class PropertiesController < ApplicationController
     before_action :set_property, only: [ :show, :edit, :update, :destroy ]
 
     def index
-        @properties = Property.includes(:neighborhood, :user).all
+        @properties = policy_scope(Property).includes(:neighborhood, :user)
     end
 
     def show
+        authorize @property
+        @listings = policy_scope(@property.listings)
     end
 
     def new
         @property = Property.new
+        authorize @property
     end
 
     def create
         @property = Property.new(property_params)
         @property.user = current_user
+        authorize @property
 
         if @property.save
-            redirect_to properties_path, notice: "Property created successfully."
+            redirect_to @property, notice: "Property created successfully.", status: :see_other
         else
             flash.now[:alert] = "Please fix the errors below"
             render :new, status: :unprocessable_entity
@@ -25,9 +29,12 @@ class PropertiesController < ApplicationController
     end
 
     def edit
+        authorize @property
     end
 
     def update
+        authorize @property
+        
         if @property.update(property_params)
             redirect_to @property, notice: "Property was succesfully updated."
         else
@@ -37,6 +44,7 @@ class PropertiesController < ApplicationController
     end
 
     def destroy
+        authorize @property
         @property.destroy
         redirect_to properties_path, notice: "Property was succesfully deleted.", status: :see_other
     end

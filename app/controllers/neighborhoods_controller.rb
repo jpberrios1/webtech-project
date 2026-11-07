@@ -1,23 +1,24 @@
 class NeighborhoodsController < ApplicationController
 
     before_action :set_neighborhood, only: [:show, :edit, :update, :destroy]
-    before_action :requiere_mod, except: [:index, :show]
 
     def index
-        @neighborhoods = Neighborhood.order(:name)
+        @neighborhoods = policy_scope(Neighborhood).order(:name)
     end
 
     def show
-        @neighborhood = Neighborhood.find(params[:id])
+        authorize @neighborhood
         @properties = @neighborhood.properties.includes(listings: { photos_attachments: :blob })
     end
 
     def new
         @neighborhood = Neighborhood.new
+        authorize @neighborhood
     end
 
     def create
         @neighborhood = Neighborhood.new(neighborhood_params)
+        authorize @neighborhood
 
         if @neighborhood.save
             redirect_to neighborhoods_path, notice: "Neighborhood created."
@@ -28,9 +29,11 @@ class NeighborhoodsController < ApplicationController
     end
 
     def edit
+        authorize @neighborhood
     end
 
     def update
+        authorize @neighborhood
         if @neighborhood.update(neighborhood_params)
             redirect_to neighborhoods_path, notice: "Neighborhood updated."
         else
@@ -40,6 +43,7 @@ class NeighborhoodsController < ApplicationController
     end
 
     def destroy
+        authorize @neighborhood
         @neighborhood.destroy
         redirect_to neighborhoods_path, notice: "Neighborhood deleted.", status: :see_other
     end
@@ -54,9 +58,4 @@ class NeighborhoodsController < ApplicationController
         params.require(:neighborhood).permit(:name, :city)
     end
 
-    def requiere_mod
-        unless current_user.name.downcase.include?("mod")
-            redirect_to root_path, alert: "You are not authorized"
-        end
-    end
 end

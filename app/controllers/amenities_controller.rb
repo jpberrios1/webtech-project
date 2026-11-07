@@ -1,22 +1,23 @@
 class AmenitiesController < ApplicationController
 
     before_action :set_amenity, only: [:show, :edit, :update, :destroy]
-    before_action :require_mod, only: [:edit, :update, :destroy]
 
     def index
-        @amenities = Amenity.order(:name)
+        @amenities = policy_scope(Amenity).order(:name)
     end
 
     def show
-      # @neighborhood = Neighborhood.find(params[:id])
+      authorize @amenity
     end
 
     def new
         @amenity = Amenity.new
+        authorize @amenity
     end
 
     def create
         @amenity = Amenity.new(amenity_params)
+        authorize @amenity
 
         if @amenity.save
             redirect_to amenities_path, notice: "Amenity created."
@@ -27,9 +28,12 @@ class AmenitiesController < ApplicationController
     end
 
     def edit
+        authorize @amenity
     end
 
     def update
+        authorize @amenity
+
         if @amenity.update(amenity_params)
             redirect_to amenities_path, notice: "Amenity updated."
         else
@@ -39,6 +43,8 @@ class AmenitiesController < ApplicationController
     end
 
     def destroy
+        authorize @amenity
+        
         @amenity.destroy
         redirect_to amenities_path, notice: "Amenity deleted.", status: :see_other
     end
@@ -53,9 +59,4 @@ class AmenitiesController < ApplicationController
         params.require(:amenity).permit(:name, :city)
     end
 
-    def require_mod
-        unless current_user.name.downcase.include?("mod")
-            redirect_to root_path, alert: "You are not authorized."
-        end
-    end
 end
