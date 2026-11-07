@@ -156,35 +156,35 @@ Published listings, paginated.
 
 Empty parameters are ignored, and unknown parameters are ignored too.
 
-Example: `GET /api/v1/listings?max_rent=400&amenity_ids[]=1&sort=rent_asc`
+Example: `GET /api/v1/listings?max_rent=400&amenity_ids[]=1&sort=rent_asc&per_page=1`
 
 ```json
 {
   "data": [
     {
-      "id": 2,
+      "id": 13,
       "title": "Small Cozy Room",
       "status": "published",
       "monthly_rent": 300.0,
       "deposit": 300.0,
-      "available_from": "2026-11-11",
+      "available_from": "2026-11-12",
       "minimum_stay_days": 30,
       "furnished": false,
       "private_bathroom": false,
-      "published_at": "2026-11-01T14:00:00.000Z",
+      "published_at": "2026-11-02T19:31:55.000Z",
       "neighborhood": { "id": 1, "name": "Providencia", "city": "Santiago" },
       "property": {
         "property_type": "apartment",
         "bedrooms": 3,
         "bathrooms": 2,
         "amenities": [{ "id": 1, "name": "Gigabit WiFi" }],
-        "shared_spaces": [{ "id": 2, "name": "Full Kitchen" }]
+        "shared_spaces": [{ "id": 2, "name": "Full Kitchen" }, { "id": 3, "name": "Balcony" }]
       },
-      "cover_photo_url": "http://127.0.0.1:3000/rails/active_storage/representations/...",
-      "url": "http://127.0.0.1:3000/listings/2"
+      "cover_photo_url": "http://127.0.0.1:3000/rails/active_storage/representations/redirect/.../cozy-1.jpg",
+      "url": "http://127.0.0.1:3000/listings/13"
     }
   ],
-  "meta": { "page": 1, "per_page": 20, "total_count": 1, "total_pages": 1 }
+  "meta": { "page": 1, "per_page": 1, "total_count": 1, "total_pages": 1 }
 }
 ```
 
@@ -238,7 +238,7 @@ With `bin/dev` running:
 ```bash
 curl -i "http://127.0.0.1:3000/api/v1/listings"
 curl -i "http://127.0.0.1:3000/api/v1/listings?max_rent=400&amenity_ids=1,3&sort=rent_asc"
-curl -i "http://127.0.0.1:3000/api/v1/listings/1"
+curl -i "http://127.0.0.1:3000/api/v1/listings/13"
 curl -i "http://127.0.0.1:3000/api/v1/amenities"
 curl -i "http://127.0.0.1:3000/api/v1/listings?max_rent=abc"
 ```

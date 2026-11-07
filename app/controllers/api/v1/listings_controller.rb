@@ -9,6 +9,7 @@ module Api
       DEFAULT_PER_PAGE = 20
       MAX_PER_PAGE = 50
 
+      # Sorting options for the index
       SORTS = {
         "available_from" => { available_from: :asc },
         "rent_asc" => { monthly_rent: :asc },
@@ -19,9 +20,9 @@ module Api
       def index
         listings = filtered_listings.order(SORTS.fetch(sort_param)).order(:id)
 
-        page = page_param
-        per_page = per_page_param
-        total_count = listings.count
+        page = page_param             # The page number
+        per_page = per_page_param     # The number of listings per page
+        total_count = listings.count  # The total number of listings that match filters (to show "1-20 of 123")
 
         listings = listings.offset((page - 1) * per_page)
                            .limit(per_page)
