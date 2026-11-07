@@ -117,6 +117,132 @@ bin/dev
 
 Once the processes boot up successfully, open your browser and visit `http://127.0.0.1:3000/` to see the website.
 
+## JSON API (v1)
+
+A public, read-only API for listing data, used by the search page and by any program that is not a browser. It only returns **published** listings and never returns personal data: no host or reviewer names, emails, phones or ids, no exact property address, and nothing about applications or reports.
+
+- **Base URL (development):** `http://127.0.0.1:3000/api/v1`
+- **Format:** every response under `/api/v1` is JSON, errors included.
+- **Authentication:** none, on purpose. The API only shows what a visitor can already see on the website without an account. Private data (applications, messages, contact details) stays in the HTML pages, protected by sign-in and Pundit.
+
+### Routes
+
+| Verb | Path | Statuses |
+| --- | --- | --- |
+| GET | `/api/v1/listings` | `200`, `400` |
+| GET | `/api/v1/listings/:id` | `200`, `404` |
+| GET | `/api/v1/neighborhoods` | `200` |
+| GET | `/api/v1/amenities` | `200` |
+| GET | `/api/v1/shared_spaces` | `200` |
+| any | any other path under `/api/v1` | `404` |
+
+### `GET /api/v1/listings`
+
+Published listings, paginated.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `neighborhood_id` | integer | Only listings in this neighborhood |
+| `min_rent` | number | Monthly rent greater than or equal to this |
+| `max_rent` | number | Monthly rent less than or equal to this |
+| `available_by` | date (`YYYY-MM-DD`) | Available on or before this date |
+| `amenity_ids` | integers | The property has **at least one** of them: `amenity_ids[]=1&amenity_ids[]=3` or `amenity_ids=1,3` |
+| `shared_space_ids` | integers | The property has **at least one** of these shared spaces, same format as `amenity_ids` |
+| `furnished` | `true` / `false` | Furnished room or not |
+| `private_bathroom` | `true` / `false` | Private bathroom or not |
+| `sort` | string | `available_from` (default), `rent_asc`, `rent_desc` or `newest` |
+| `page` | integer | Page number, starts at 1 (default 1) |
+| `per_page` | integer | Results per page, 1 to 50 (default 20) |
+
+Empty parameters are ignored, and unknown parameters are ignored too.
+
+Example: `GET /api/v1/listings?max_rent=400&amenity_ids[]=1&sort=rent_asc&per_page=1`
+
+```json
+{
+  "data": [
+    {
+      "id": 13,
+      "title": "Small Cozy Room",
+      "status": "published",
+      "monthly_rent": 300.0,
+      "deposit": 300.0,
+      "available_from": "2026-11-12",
+      "minimum_stay_days": 30,
+      "furnished": false,
+      "private_bathroom": false,
+      "published_at": "2026-11-02T19:31:55.000Z",
+      "neighborhood": { "id": 1, "name": "Providencia", "city": "Santiago" },
+      "property": {
+        "property_type": "apartment",
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "amenities": [{ "id": 1, "name": "Gigabit WiFi" }],
+        "shared_spaces": [{ "id": 2, "name": "Full Kitchen" }, { "id": 3, "name": "Balcony" }]
+      },
+      "cover_photo_url": "http://127.0.0.1:3000/rails/active_storage/representations/redirect/.../cozy-1.jpg",
+      "url": "http://127.0.0.1:3000/listings/13"
+    }
+  ],
+  "meta": { "page": 1, "per_page": 1, "total_count": 1, "total_pages": 1 }
+}
+```
+
+`cover_photo_url` is `null` when the listing has no photos.
+
+### `GET /api/v1/listings/:id`
+
+One published listing. Same fields as above, plus:
+
+| Field | Content |
+| --- | --- |
+| `description`, `house_rules` | Plain text (the rich text without its HTML) |
+| `photos` | A list with `url` (the original) and `large_url` (resized to 1200×800) for each photo |
+| `reviews_summary` | `count` and `average_rating` (`null` when there are no reviews) |
+| `reviews` | `rating`, `comment` and `created_at`, newest first, without who wrote them |
+
+A listing that is a draft, reserved, rented or withdrawn answers `404`, the same as an id that doesn't exist.
+
+### `GET /api/v1/neighborhoods`, `GET /api/v1/amenities` and `GET /api/v1/shared_spaces`
+
+The catalogs, to fill the search filters with the ids the listings endpoint accepts.
+
+```json
+{ "data": [{ "id": 1, "name": "Providencia", "city": "Santiago" }] }
+```
+
+```json
+{ "data": [{ "id": 1, "name": "Gigabit WiFi", "description": "900 Mbps fiber optic" }] }
+```
+
+Neighborhoods are sorted by city and name; amenities and shared spaces by name. A `description` can be `null`.
+
+### Status codes and errors
+
+| Status | When |
+| --- | --- |
+| `200 OK` | The request worked (a search with no results is still a 200, with an empty `data`) |
+| `400 Bad Request` | A parameter has an invalid value, for example `max_rent=abc`, `available_by=tomorrow`, `sort=price` or `per_page=500` |
+| `404 Not Found` | The listing doesn't exist or is not reachable |
+
+Errors always have the same shape, a list of messages:
+
+```json
+{ "errors": ["max_rent must be a number greater than or equal to 0"] }
+```
+
+### Ask the API from the terminal
+
+With `bin/dev` running:
+
+```bash
+curl -i "http://127.0.0.1:3000/api/v1/listings"
+curl -i "http://127.0.0.1:3000/api/v1/listings?max_rent=400&amenity_ids=1,3&sort=rent_asc"
+curl -i "http://127.0.0.1:3000/api/v1/listings/13"
+curl -i "http://127.0.0.1:3000/api/v1/amenities"
+curl -i "http://127.0.0.1:3000/api/v1/listings?max_rent=abc"
+```
+
 ## Authors
 
 [Juan Pablo Berríos](https://github.com/jpberrios1)  

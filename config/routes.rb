@@ -23,6 +23,19 @@ Rails.application.routes.draw do
 
   resources :applications, except: [ :new, :create ]
 
+  # Public JSON API. The version is part of the URL, so a future v2 can live next to v1.
+  namespace :api, defaults: { format: :json } do
+    namespace :v1 do
+      resources :listings, only: [ :index, :show ]
+      resources :neighborhoods, only: [ :index ]
+      resources :amenities, only: [ :index ]
+      resources :shared_spaces, only: [ :index ]
+
+      # Anything else under /api/v1 answers a JSON 404 instead of Rails' HTML error page
+      match "*path", to: "base#route_not_found", via: :all
+    end
+  end
+
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
