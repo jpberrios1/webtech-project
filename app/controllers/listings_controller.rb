@@ -36,11 +36,11 @@ class ListingsController < ApplicationController
 
     new_status = params.dig(:listing, :status)
     success = case new_status
-    when "published" then @listing.publish
-    when "withdrawn" then @listing.withdraw
-    when "rented" then @listings.mark_as_rented
-    else @listing.update(listing_params)
-    end
+              when "published" then @listing.publish
+              when "withdrawn" then @listing.withdraw
+              when "rented" then @listings.mark_as_rented
+              else @listing.update(listing_params)
+              end
 
 
     if success
@@ -72,7 +72,7 @@ class ListingsController < ApplicationController
     params.require(:listing).permit(:title, :monthly_rent, :deposit, :available_from, :minimum_stay_days,
                                      :is_furnished, :has_private_bathroom, :description, :house_rules, :status, photos: [])
   end
-
+    
 
 
   def finish(succeeded, notice)

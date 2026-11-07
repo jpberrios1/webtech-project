@@ -1,6 +1,7 @@
 class NeighborhoodsController < ApplicationController
-    before_action :set_neighborhood, only: [ :show, :edit, :update, :destroy ]
-    before_action :requiere_mod, except: [ :index, :show ]
+
+    before_action :set_neighborhood, only: [:show, :edit, :update, :destroy]
+    before_action :requiere_mod, except: [:index, :show]
 
     def index
         @neighborhoods = Neighborhood.order(:name)

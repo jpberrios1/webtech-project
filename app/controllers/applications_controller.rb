@@ -31,12 +31,12 @@ class ApplicationsController < ApplicationController
 
         new_status = params.dig(:application, :status)
         success = case new_status
-        when "shortlisted" then @application.shortlist
-        when "accepted" then @application.accept
-        when "rejected" then @application.reject
-        when "withdrawn" then @application.withdraw
-        else @application.update(application_params)
-        end
+                  when "shortlisted" then @application.shortlist
+                  when "accepted" then @application.accept
+                  when "rejected" then @application.reject
+                  when "withdrawn" then @application.withdraw
+                  else @application.update(application_params)
+                  end
 
         if success
             redirect_to @application, notice: "Application status updated.", status: :see_other
@@ -72,7 +72,7 @@ class ApplicationsController < ApplicationController
 
             respond_to do |format|
             format.turbo_stream do
-                flash.now[:notice] = notice
+                flash.now[:notice] = notice 
                 render :update_status
             end
 
