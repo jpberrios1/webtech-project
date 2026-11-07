@@ -27,6 +27,9 @@ Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       resources :listings, only: [ :index, :show ]
+      resources :neighborhoods, only: [ :index ]
+      resources :amenities, only: [ :index ]
+      resources :shared_spaces, only: [ :index ]
 
       # Anything else under /api/v1 answers a JSON 404 instead of Rails' HTML error page
       match "*path", to: "base#route_not_found", via: :all
