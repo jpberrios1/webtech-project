@@ -35,15 +35,15 @@ class ListingsController < ApplicationController
 
   def update
     authorize @listing
+    return change_status if params[:transition].present?
 
     new_status = params.dig(:listing, :status)
     success = case new_status
               when "published" then @listing.publish
               when "withdrawn" then @listing.withdraw
-              when "rented" then @listings.mark_as_rented
+              when "rented" then @listing.mark_as_rented
               else @listing.update(listing_params)
               end
-
 
     if success
       redirect_to @listing, notice: "Listing was successfully updated.", status: :see_other
@@ -94,4 +94,5 @@ class ListingsController < ApplicationController
     else
       redirect_to @listing, alert: "Unknown action.", status: :see_other
     end
+  end
 end

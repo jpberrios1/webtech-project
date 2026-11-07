@@ -3,7 +3,7 @@ class ApplicationsController < ApplicationController
 
     def index
         authorize Application
-        scoped_appliations = policy_scope(Application).includes(:seeker, listing: :property)
+        scoped_applications = policy_scope(Application).includes(:seeker, listing: :property)
 
         @applications = scoped_applications
         @received_applications = scoped_applications.joins(listing: :property).where(properties: {user_id: current_user&.id})
@@ -36,7 +36,7 @@ class ApplicationsController < ApplicationController
     def update
         authorize @application, :update?
 
-        #return change_status if params[:transition].present?   
+        return change_status if params[:transition].present?   
 
         new_status = params.dig(:application, :status)
         success = case new_status
