@@ -15,19 +15,13 @@
         <% end %>
       </p>
 
-      <% if policy(@property).update? || policy(@property).destroy? || policy(@property.listings.build).create? %>
+      <% if authenticated? && policy(@property).update? %>
         <div class="d-flex justify-content-center gap-3 mb-5">
-          <% if policy(@property).update? %>
-            <%= link_to "Edit Property", edit_property_path(@property), class: "btn btn-outline-primary px-4 rounded-3" %>
-          <% end %>
-
+          <%= link_to "Edit Property", edit_property_path(@property), class: "btn btn-outline-primary px-4 rounded-3" %>
           <% if policy(@property).destroy? %>
             <%= button_to "Delete Property", @property, method: :delete, data: { turbo_confirm: "Are you sure you want to delete this property?" }, class: "btn btn-outline-danger px-4 rounded-3" %>
           <% end %>
-
-          <% if policy(@property.listings.build).create? %>
-            <%= link_to "Add New Room", new_property_listing_path(@property), class: "btn btn-mio px-4 rounded-3" %>
-          <% end %>
+          <%= link_to "Add New Room", new_property_listing_path(@property), class: "btn btn-mio px-4 rounded-3" %>
         </div>
       <% end %>
     </div>
@@ -54,23 +48,19 @@
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <div>
                   <span class="fw-semibold"><%= review.user.name %></span>
-
-                  <% if policy(review).update? %>
+                  <% if authenticated? && policy(review).update? %>
                     <%= link_to "Edit", edit_review_path(review), class: "text-primary small fw-semibold text-decoration-none ms-3" %>
                   <% end %>
-
-                  <% if policy(review).destroy? %>
-                    <span class="text-muted mx-1">|</span>
+                  <% if authenticated? && policy(review).destroy? %>
+                    <% if policy(review).update? %><span class="text-muted mx-1">|</span><% else %><span class="ms-3"></span><% end %>
                     <%= link_to "Delete", review, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this review?" }, class: "text-danger small fw-semibold text-decoration-none" %>
                   <% end %>
                 </div>
-
                 <span class="text-warning">
                   <% review.rating.times do %><i class="bi bi-star-fill"></i><% end %>
                   <% (5 - review.rating).times do %><i class="bi bi-star"></i><% end %>
                 </span>
               </div>
-
               <p class="text-muted small mb-0">"<%= review.comment %>"</p>
               <span class="text-muted" style="font-size: 0.75rem;"><%= review.created_at.strftime("%B %Y") %></span>
             </div>
@@ -81,37 +71,38 @@
       <p class="text-muted mb-5">No reviews yet for this property.</p>
     <% end %>
 
-    <% if current_user.present? %>
+    <% if authenticated? %>
       <% current_user_visit = Visit.joins(application: :listing).find_by(
         status: "completed",
         applications: { seeker_id: current_user.id },
         listings: { property_id: @property.id }
       ) %>
 
-      <% if current_user_visit.present? && !Review.exists?(user_id: current_user.id, property_id: @property.id) && policy(Review.new(property: @property, visit: current_user_visit)).create? %>
-        <div class="card shadow-sm border-0 rounded-4 mb-5 bg-light">
-          <div class="card-body p-4">
-            <h5 class="fw-bold mb-3">Leave a Review</h5>
-            <%= form_with model: Review.new, url: reviews_path, class: "row g-3" do |f| %>
-              <%= f.hidden_field :property_id, value: @property.id %>
-              <%= f.hidden_field :visit_id, value: current_user_visit.id %>
+      <% if current_user_visit.present? && !Review.exists?(user_id: current_user.id, property_id: @property.id) %>
+        <% new_review = Review.new(property: @property, user: current_user) %>
+        <% if policy(new_review).create? %>
+          <div class="card shadow-sm border-0 rounded-4 mb-5 bg-light">
+            <div class="card-body p-4">
+              <h5 class="fw-bold mb-3">Leave a Review</h5>
+              <%= form_with model: Review.new, url: reviews_path, class: "row g-3" do |f| %>
+                <%= f.hidden_field :property_id, value: @property.id %>
+                <%= f.hidden_field :visit_id, value: current_user_visit.id %>
 
-              <div class="col-md-3">
-                <%= f.label :rating, "Rating (1-5)", class: "form-label fw-bold small text-muted" %>
-                <%= f.number_field :rating, in: 1..5, class: "form-control border-0 bg-white", required: true %>
-              </div>
-
-              <div class="col-md-9">
-                <%= f.label :comment, class: "form-label fw-bold small text-muted" %>
-                <%= f.text_field :comment, class: "form-control border-0 bg-white", placeholder: "Share your experience about this property...", required: true %>
-              </div>
-
-              <div class="col-12 text-end mt-3">
-                <%= f.submit "Submit Review", class: "btn btn-mio px-4 rounded-3" %>
-              </div>
-            <% end %>
+                <div class="col-md-3">
+                  <%= f.label :rating, "Rating (1-5)", class: "form-label fw-bold small text-muted" %>
+                  <%= f.number_field :rating, in: 1..5, class: "form-control border-0 bg-white", required: true %>
+                </div>
+                <div class="col-md-9">
+                  <%= f.label :comment, class: "form-label fw-bold small text-muted" %>
+                  <%= f.text_field :comment, class: "form-control border-0 bg-white", placeholder: "Share your experience about this property...", required: true %>
+                </div>
+                <div class="col-12 text-end mt-3">
+                  <%= f.submit "Submit Review", class: "btn btn-mio px-4 rounded-3" %>
+                </div>
+              <% end %>
+            </div>
           </div>
-        </div>
+        <% end %>
       <% end %>
     <% else %>
       <p class="text-muted mb-5">
