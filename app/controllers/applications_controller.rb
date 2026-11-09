@@ -6,7 +6,7 @@ class ApplicationsController < ApplicationController
         scoped_applications = policy_scope(Application).includes(:seeker, listing: :property)
 
         @applications = scoped_applications
-        @received_applications = scoped_applications.joins(listing: :property).where(properties: {user_id: current_user&.id})
+        @received_applications = scoped_applications.joins(listing: :property).where(properties: { user_id: current_user&.id })
         @sent_applications = scoped_applications.where(seeker_id: current_user&.id)
     end
 
@@ -18,7 +18,7 @@ class ApplicationsController < ApplicationController
         @listing = Listing.find(params[:listing_id] || params.dig(:application, :listing_id))
         @application = @listing.applications.new(application_params)
         @application.seeker = current_user
-        
+
         authorize @application
 
         if @application.save
@@ -34,20 +34,20 @@ class ApplicationsController < ApplicationController
     end
 
     def update
-        authorize @application, :update?
+        return change_status if params[:transition].present?
 
-        return change_status if params[:transition].present?   
+        authorize @application, :update?
 
         new_status = params.dig(:application, :status)
         success = case new_status
-                  when "shortlisted" then @application.shortlist
-                  when "accepted" then @application.accept
-                  when "rejected" then @application.reject
-                  when "withdrawn" then 
+        when "shortlisted" then @application.shortlist
+        when "accepted" then @application.accept
+        when "rejected" then @application.reject
+        when "withdrawn" then
                     authorize @application, :withdraw?
                     @application.withdraw
-                  else @application.update(application_params)
-                  end
+        else @application.update(application_params)
+        end
 
         if success
             redirect_to @application, notice: "Application status updated.", status: :see_other
@@ -59,7 +59,7 @@ class ApplicationsController < ApplicationController
 
     def destroy
         authorize @application, :withdraw?
-        
+
         if @application.withdraw
         redirect_to applications_path, notice: "Application withdrawn successfully", status: :see_other
         else
@@ -89,7 +89,7 @@ class ApplicationsController < ApplicationController
 
             respond_to do |format|
             format.turbo_stream do
-                flash.now[:notice] = notice 
+                flash.now[:notice] = notice
                 render :update_status
             end
 
@@ -112,7 +112,6 @@ class ApplicationsController < ApplicationController
     end
 
     def change_status
-
         case params[:transition]
         when "shortlist"
             authorize @application, :shortlist?

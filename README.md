@@ -117,6 +117,86 @@ bin/dev
 
 Once the processes boot up successfully, open your browser and visit `http://127.0.0.1:3000/` to see the website.
 
+## Roles and accounts
+
+### Roles
+
+Roomies has three roles. **Ownership, not the role, decides most permissions**: a member acts as a host on the listings they own and as a seeker on everyone else's.
+
+| Role | Who | What they can do |
+| --- | --- | --- |
+| Visitor | Anyone who is not signed in (not stored, it is the absence of an account) | Browse and search published listings, and read property pages and reviews |
+| Member | Every account, by default | Everything a visitor can, plus: publish properties and listings and manage their own; apply to other people's listings; see the applications on their own listings and the ones they wrote; shortlist, accept or reject applications on their own listings; propose and cancel visits as host or applicant; review a property after their own completed visit; delete their own reviews; report listings |
+| Moderator | `role: moderator` | Everything a member can, plus: see draft listings, edit or delete any property or listing, see every application, delete any review, resolve reports, and manage the neighborhood and amenity catalogs. A moderator can't act as the host of someone else's listing (shortlist, accept, reject, visits) |
+
+Every action is blocked in the controller by a Pundit policy (`app/policies/`), not only hidden in the interface. An unauthorized attempt redirects back with a message explaining what happened.
+
+### Seed accounts
+
+`bin/rails db:seed` empties the database and creates the same data again. It also deletes every session, so every browser is signed out and has to sign in again.
+
+Each account has its own password, written as `<role>-<name>-2026`:
+
+| Email | Password | Role | In the seed data |
+| --- | --- | --- | --- |
+| `admin@roomies.com` | `moderator-admin-2026` | Moderator | Reviewed and resolved several reports |
+| `alice@roomies.com` | `member-alice-2026` | Member | Host of the Providencia duplex (Sunny Master Bedroom, Small Cozy Room) and the Ñuñoa flat; her application in Barrio Italia was rejected |
+| `carlos@roomies.com` | `member-carlos-2026` | Member | Host of the house in El Golf, with a draft (Luxury Room); has a completed visit he hasn't reviewed yet |
+| `elena@roomies.com` | `member-elena-2026` | Member | Host of the Lastarria loft and the Valparaíso studio |
+| `bob@roomies.com` | `member-bob-2026` | Member | Host in Barrio Italia; accepted in the Ñuñoa flat; wrote a review |
+| `diana@roomies.com` | `member-diana-2026` | Member | Host in Bellavista, with a draft; shortlisted on the Sunny Master Bedroom, with a confirmed visit |
+| `felipe@roomies.com` | `member-felipe-2026` | Member | Seeker only: a pending application on the Sunny Master Bedroom |
+| `gabriela@roomies.com` | `member-gabriela-2026` | Member | Seeker only: several applications (withdrawn, rejected) and a report |
+| `ignacia@roomies.com` | `member-ignacia-2026` | Member | Host in Valparaíso; accepted on the Lastarria terrace room |
+| `joaquin@roomies.com` | `member-joaquin-2026` | Member | Seeker only: shortlisted in Barrio Italia, with a proposed visit |
+| `karen@roomies.com` | `member-karen-2026` | Member | Seeker only: rented the Cerro Alegre room |
+| `hugo@roomies.com` | `member-hugo-2026` | Member | A new account: no phone, no bio, one pending application and a pending report |
+
+**These accounts and passwords exist only to try the application in development.** They are written here on purpose and must never be used anywhere else.
+
+To make another account a moderator, from the console:
+
+```bash
+bin/rails console
+User.find_by(email_address: "felipe@roomies.com").update!(role: :moderator)
+```
+
+### Checking the permission table
+
+After `bin/rails db:seed`, each row can be checked by signing in as one account and then another. The ids stay the same after every seed, because the seed restarts them at 1.
+
+| Permission | Sign in as | Try | Expected |
+| --- | --- | --- | --- |
+| Browse and search published listings | Nobody (signed out) | `/listings` | ✅ Allowed |
+| See a draft listing | Carlos | His draft, *Luxury Room (Not ready yet)*: `/listings/15` | ✅ Allowed |
+| | Alice, or signed out | `/listings/15` | ❌ Denied |
+| | Moderator | `/listings/15` and Diana's draft `/listings/16` | ✅ Allowed |
+| Create a property or a listing | Any member | *New property* | ✅ Allowed |
+| | Signed out | `/properties/new` | ❌ Sent to the sign-in page |
+| Edit or delete a property or listing | Alice | Her *Sunny Master Bedroom*: `/listings/9/edit` | ✅ Allowed |
+| | Alice | Bob's *Garden Room in Barrio Italia*: `/listings/12/edit` | ❌ Denied |
+| | Moderator | `/listings/12/edit` | ✅ Allowed |
+| Apply to a listing | Alice | Her own *Sunny Master Bedroom* (`/listings/9`) | ❌ Denied |
+| | Alice | Diana's *Room with Rooftop Access* (`/listings/14`) | ✅ Allowed |
+| See the applications on a listing | Alice | Her inbox: Diana's and Felipe's applications on the Sunny Master Bedroom | ✅ Only those on her listings, plus her own |
+| | Diana | Her applications | ✅ Only her own, not Felipe's |
+| | Bob | Felipe's application by URL: `/applications/15` | ❌ Denied |
+| | Moderator | `/applications` | ✅ Every application |
+| Shortlist, reject or accept | Alice | Felipe's pending application `/applications/15` | ✅ Allowed |
+| | Moderator, or Felipe | The same application | ❌ Denied |
+| Propose or cancel a visit | Alice (host) or Diana (applicant) | Diana's visit on the Sunny Master Bedroom (`/applications/11`) | ✅ Allowed |
+| | Bob, or the moderator | The same visit | ❌ Denied |
+| Write a review | Carlos | The Barrio Italia townhouse, after his completed visit to the attic room | ✅ Allowed |
+| | Diana | The Providencia duplex (her visit is confirmed, not completed) | ❌ Denied |
+| Delete a review | Bob | His own review of the Ñuñoa flat | ✅ Allowed |
+| | Bob | Felipe's review of the Lastarria loft | ❌ Denied |
+| | Moderator | Any review | ✅ Allowed |
+| Report a listing | Any member | Any listing | ✅ Allowed |
+| Resolve a report | Moderator | Hugo's pending report on the *Studio Room by the Port* | ✅ Allowed |
+| | Any member | The same report | ❌ Denied |
+| Manage neighborhoods and amenities | Moderator | `/neighborhoods/new`, `/amenities/new` | ✅ Allowed |
+| | Alice | The same pages | ❌ Denied |
+
 ## JSON API (v1)
 
 A public, read-only API for listing data, used by the search page and by any program that is not a browser. It only returns **published** listings and never returns personal data: no host or reviewer names, emails, phones or ids, no exact property address, and nothing about applications or reports.

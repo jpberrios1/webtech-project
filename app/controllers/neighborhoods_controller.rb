@@ -1,6 +1,5 @@
 class NeighborhoodsController < ApplicationController
-
-    before_action :set_neighborhood, only: [:show, :edit, :update, :destroy]
+    before_action :set_neighborhood, only: [ :show, :edit, :update, :destroy ]
 
     def index
         @neighborhoods = policy_scope(Neighborhood).order(:name)
@@ -57,5 +56,4 @@ class NeighborhoodsController < ApplicationController
     def neighborhood_params
         params.require(:neighborhood).permit(:name, :city)
     end
-
 end

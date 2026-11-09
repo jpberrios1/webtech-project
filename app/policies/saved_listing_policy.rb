@@ -1,5 +1,4 @@
 class SavedListingPolicy < BasePolicy
-    
     def index?
         user.present?
     end
@@ -15,7 +14,7 @@ class SavedListingPolicy < BasePolicy
     class Scope < BasePolicy::Scope
         def resolve
             return scope.none if user.nil?
-            scope.where (user_id: user.id)
+            scope.where(user_id: user.id)
         end
     end
 end

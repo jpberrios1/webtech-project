@@ -1,10 +1,9 @@
 class PropertyPolicy < BasePolicy
-
     def index?
         true
     end
 
-    def show? 
+    def show?
         true
     end
 

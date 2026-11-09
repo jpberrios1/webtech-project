@@ -1,5 +1,4 @@
 class VisitPolicy < BasePolicy
-
     def index?
         user.present?
     end
@@ -37,7 +36,7 @@ class VisitPolicy < BasePolicy
             return scope.none if user.nil?
             return scope.all if user.moderator?
 
-            scope.joins(application: {listing: :property}).where("applications.seeker_id = :uid OR properties.user_id = :uid",
+            scope.joins(application: { listing: :property }).where("applications.seeker_id = :uid OR properties.user_id = :uid",
                                                                  uid: user.id).distinct
         end
     end

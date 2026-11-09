@@ -111,7 +111,7 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     email = ActionMailer::Base.deliveries.last
 
     assert_not_nil email
-    assert_equal [@user.email_address], email.to
+    assert_equal [ @user.email_address ], email.to
     assert_equal "Reset your Roomies password", email.subject
     assert_match "Reset your Roomies password", email.body.encoded
     assert_match "/passwords/", email.body.encoded

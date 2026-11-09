@@ -1,5 +1,4 @@
 class ReviewPolicy < BasePolicy
-
     def index?
         true
     end
@@ -16,8 +15,8 @@ class ReviewPolicy < BasePolicy
         elsif record.property.present?
             Visit.joins(application: :listing).exists?(
                 status: "completed",
-                applications: {seeker_id: user.id},
-                listings: {property_id: record.property.id}
+                applications: { seeker_id: user.id },
+                listings: { property_id: record.property.id }
             )
         else
             false

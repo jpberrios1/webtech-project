@@ -1,5 +1,4 @@
 class ListingPolicy < BasePolicy
-
     def index?
         true
     end
@@ -41,14 +40,14 @@ class ListingPolicy < BasePolicy
     end
 
     class Scope < BasePolicy::Scope
-        def resolve 
+        def resolve
             if user&.moderator?
                 scope.all
             elsif user.present?
-                scope.left_joins(:property).where( "listings.status IN (?) OR properties.user_id = ?",
-                                                  ["published", "reserved", "rented"], user.id)
+                scope.left_joins(:property).where("listings.status IN (?) OR properties.user_id = ?",
+                                                  [ "published", "reserved", "rented" ], user.id)
             else
-                scope.where(status: ["published", "reserved", "rented"])
+                scope.where(status: [ "published", "reserved", "rented" ])
             end
         end
     end

@@ -1,5 +1,4 @@
 class ReportPolicy < BasePolicy
-
     def index?
         user&.moderator?
     end

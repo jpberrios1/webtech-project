@@ -1,5 +1,5 @@
 class ListingsController < ApplicationController
-  allow_unauthenticated_access only: [:index, :show]
+  allow_unauthenticated_access only: [ :index, :show ]
   before_action :set_listing, only: [ :show, :edit, :update, :destroy ]
 
   def index
@@ -40,11 +40,11 @@ class ListingsController < ApplicationController
 
     new_status = params.dig(:listing, :status)
     success = case new_status
-              when "published" then @listing.publish
-              when "withdrawn" then @listing.withdraw
-              when "rented" then @listing.mark_as_rented
-              else @listing.update(listing_params)
-              end
+    when "published" then @listing.publish
+    when "withdrawn" then @listing.withdraw
+    when "rented" then @listing.mark_as_rented
+    else @listing.update(listing_params)
+    end
 
     if success
       redirect_to @listing, notice: "Listing was successfully updated.", status: :see_other
@@ -70,7 +70,7 @@ class ListingsController < ApplicationController
     params.require(:listing).permit(:title, :monthly_rent, :deposit, :available_from, :minimum_stay_days,
                                      :is_furnished, :has_private_bathroom, :description, :house_rules, :status, photos: [])
   end
-    
+
   def finish(succeeded, notice)
     if succeeded
       redirect_to @listing, notice: notice, status: :see_other

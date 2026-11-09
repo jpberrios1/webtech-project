@@ -8,8 +8,8 @@ Rails.application.routes.draw do
   root "roomies#home"
   resource :session, only: %i[new create destroy]
   resources :passwords, only: %i[new create edit update], param: :token
-  resources :users, only: [:new, :create]
-  resource :profile, only: [:show, :edit, :update]
+  resources :users, only: [ :new, :create ]
+  resource :profile, only: [ :show, :edit, :update ]
 
   resources :neighborhoods
   resources :amenities

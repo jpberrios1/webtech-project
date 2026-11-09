@@ -5,6 +5,8 @@
 # 3. The events are sorted by time and replayed in order. Before each one, the seed
 #    travels back to that moment (travel_to), so every record goes through the real
 #    validations and lifecycle methods of the models. Nothing uses validate: false.
+# 4. Every user gets a password, so the permission table can be checked by signing in
+#    as one account and then another. The accounts are listed in the README.
 
 require "active_support/testing/time_helpers"
 extend ActiveSupport::Testing::TimeHelpers
@@ -12,6 +14,7 @@ extend ActiveSupport::Testing::TimeHelpers
 # ---------------------------------------------------------------------------
 # Clean the database
 # ---------------------------------------------------------------------------
+Session.delete_all # every browser is signed out, since its user is about to be deleted
 Report.destroy_all
 Review.destroy_all
 Visit.destroy_all
@@ -35,20 +38,46 @@ end
 # DATA
 # ---------------------------------------------------------------------------
 
+# Each account signs in with its own password, written as "<role>-<name>-2026".
+# These accounts exist only to try the application in development.
 USERS = {
-  alice:    { name: "Alice Rojas",     email_address: "alice@roomies.com",    phone: "555-0001" },
-  carlos:   { name: "Carlos Muñoz",    email_address: "carlos@roomies.com",   phone: "555-0002" },
-  elena:    { name: "Elena Soto",      email_address: "elena@roomies.com",    phone: "555-0003" },
-  bob:      { name: "Bob Pérez",       email_address: "bob@roomies.com",      phone: "555-0101" },
-  diana:    { name: "Diana Torres",    email_address: "diana@roomies.com",    phone: "555-0102" },
-  felipe:   { name: "Felipe Araya",    email_address: "felipe@roomies.com",   phone: "555-0103" },
-  gabriela: { name: "Gabriela Díaz",   email_address: "gabriela@roomies.com", phone: "555-0104" },
-  ignacia:  { name: "Ignacia Fuentes", email_address: "ignacia@roomies.com",  phone: "555-0105" },
-  joaquin:  { name: "Joaquín Vera",    email_address: "joaquin@roomies.com",  phone: "555-0106" },
-  karen:    { name: "Karen Lagos",     email_address: "karen@roomies.com",    phone: "555-0107" },
-  admin:    { name: "Admin Mod",       email_address: "admin@roomies.com",    role: "moderator" },
-  # Edge: no phone, upper-case email, default role (member)
-  hugo:     { name: "Hugo Reyes",      email_address: "HUGO@Roomies.com" }
+  alice:    { name: "Alice Rojas", email_address: "alice@roomies.com", phone: "555-0001",
+              password: "member-alice-2026",
+              bio: "Graphic designer. I rent out rooms in my Providencia duplex and my Ñuñoa flat, " \
+                   "and I'm looking for a place closer to work." },
+  carlos:   { name: "Carlos Muñoz", email_address: "carlos@roomies.com", phone: "555-0002",
+              password: "member-carlos-2026",
+              bio: "Engineer. I'm renting a room in my house in El Golf while I look for something closer to my office." },
+  elena:    { name: "Elena Soto", email_address: "elena@roomies.com", phone: "555-0003",
+              password: "member-elena-2026",
+              bio: "Painter splitting my time between Lastarria and Valparaíso. I host rooms in both." },
+  bob:      { name: "Bob Pérez", email_address: "bob@roomies.com", phone: "555-0101",
+              password: "member-bob-2026",
+              bio: "Cyclist and coffee lover. I host the garden room in Barrio Italia and I'm about to move to Ñuñoa." },
+  diana:    { name: "Diana Torres", email_address: "diana@roomies.com", phone: "555-0102",
+              password: "member-diana-2026",
+              bio: "Nurse on night shifts. I host a room in Bellavista and I'm searching in Providencia." },
+  felipe:   { name: "Felipe Araya", email_address: "felipe@roomies.com", phone: "555-0103",
+              password: "member-felipe-2026",
+              bio: "University student. I lived in Lastarria last year and I'm looking for a room again." },
+  gabriela: { name: "Gabriela Díaz", email_address: "gabriela@roomies.com", phone: "555-0104",
+              password: "member-gabriela-2026",
+              bio: "Exchange student, looking for short stays while I finish my semester." },
+  ignacia:  { name: "Ignacia Fuentes", email_address: "ignacia@roomies.com", phone: "555-0105",
+              password: "member-ignacia-2026",
+              bio: "From Valparaíso, working in Santiago on weekdays. I host a house on Cerro Alegre." },
+  joaquin:  { name: "Joaquín Vera", email_address: "joaquin@roomies.com", phone: "555-0106",
+              password: "member-joaquin-2026",
+              bio: "I bike everywhere and work from home. Looking for a quiet room with a garden." },
+  karen:    { name: "Karen Lagos", email_address: "karen@roomies.com", phone: "555-0107",
+              password: "member-karen-2026",
+              bio: "Remote worker who moved to Valparaíso for the sea views." },
+  admin:    { name: "Admin Mod", email_address: "admin@roomies.com", role: "moderator",
+              password: "moderator-admin-2026",
+              bio: "Roomies moderator. I review reports and keep the neighborhood and amenity catalogs tidy." },
+  # Edge: no phone, no bio, upper-case email (saved in lower case), default role (member)
+  hugo:     { name: "Hugo Reyes", email_address: "HUGO@Roomies.com",
+              password: "member-hugo-2026" }
 }
 
 NEIGHBORHOODS = {
@@ -422,7 +451,7 @@ end
 # RECORDS WITH NO HISTORY: created right away
 # ---------------------------------------------------------------------------
 
-users         = USERS.transform_values         { |data| User.create!(password_digest: "pwd", **data) }
+users         = USERS.transform_values         { |data| User.create!(**data) }
 neighborhoods = NEIGHBORHOODS.transform_values { |data| Neighborhood.create!(**data) }
 amenities     = AMENITIES.transform_values     { |data| Amenity.create!(**data) }
 shared_spaces = SHARED_SPACES.transform_values { |data| SharedSpace.create!(**data) }
@@ -538,3 +567,6 @@ puts "  Listings:     #{Listing.group(:status).count}"
 puts "  Applications: #{Application.group(:status).count}"
 puts "  Visits:       #{Visit.group(:status).count}"
 puts "  Reviews: #{Review.count} | Saved listings: #{SavedListing.count} | Reports: #{Report.group(:status).count}"
+puts "Sign in with any account of the README, for example:"
+puts "  Member:    alice@roomies.com / #{USERS[:alice][:password]}"
+puts "  Moderator: admin@roomies.com / #{USERS[:admin][:password]}"

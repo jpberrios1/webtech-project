@@ -1,6 +1,5 @@
 class AmenitiesController < ApplicationController
-
-    before_action :set_amenity, only: [:show, :edit, :update, :destroy]
+    before_action :set_amenity, only: [ :show, :edit, :update, :destroy ]
 
     def index
         @amenities = policy_scope(Amenity).order(:name)
@@ -44,7 +43,7 @@ class AmenitiesController < ApplicationController
 
     def destroy
         authorize @amenity
-        
+
         @amenity.destroy
         redirect_to amenities_path, notice: "Amenity deleted.", status: :see_other
     end
@@ -58,5 +57,4 @@ class AmenitiesController < ApplicationController
     def amenity_params
         params.require(:amenity).permit(:name, :city)
     end
-
 end

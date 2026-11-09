@@ -1,5 +1,4 @@
 class NeighborhoodPolicy < BasePolicy
-
     def index?
         true
     end

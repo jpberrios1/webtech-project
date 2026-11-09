@@ -1,5 +1,5 @@
 class PropertiesController < ApplicationController
-    allow_unauthenticated_access only: [:index, :show]
+    allow_unauthenticated_access only: [ :index, :show ]
     before_action :set_property, only: [ :show, :edit, :update, :destroy ]
 
     def index
@@ -35,7 +35,7 @@ class PropertiesController < ApplicationController
 
     def update
         authorize @property
-        
+
         if @property.update(property_params)
             redirect_to @property, notice: "Property was succesfully updated."
         else
