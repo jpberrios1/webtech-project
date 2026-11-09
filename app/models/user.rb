@@ -17,8 +17,7 @@ class User < ApplicationRecord
   has_many :reports, dependent: :destroy
   has_many :reviewed_reports, class_name: "Report", foreign_key: :reviewer_id, dependent: :nullify
 
-  # Roles
-  enum :role, { member: "member", moderator: "moderator" }
+  enum :role, { member: "member", moderator: "moderator" }, default: "member"
 
   # Validations
   validates :name, presence: true, length: { maximum: 120 }
