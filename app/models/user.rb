@@ -7,7 +7,7 @@ class User < ApplicationRecord
   has_many :reports, dependent: :destroy
   has_many :reviewed_reports, class_name: "Report", foreign_key: :reviewer_id, dependent: :nullify
 
-  enum :role, { member: "member", moderator: "moderator" }
+  enum :role, { member: "member", moderator: "moderator" }, default: "member"
 
   validates :name, presence: true, length: { maximum: 120 }
   validates :email_address, presence: true, uniqueness: { case_sensitive: false }, length: { maximum: 255 }, format: { with: URI::MailTo::EMAIL_REGEXP }

@@ -2,6 +2,8 @@ class ReviewsController < ApplicationController
   def create
     @review = Review.new(review_params)
     @review.user = current_user 
+
+    authorize @review
     
     if @review.save
       redirect_to @review.property, notice: "Review submitted successfully."
@@ -12,10 +14,12 @@ class ReviewsController < ApplicationController
 
   def edit
     @review = Review.find(params[:id])
+    authorize @review
   end
 
   def update
     @review = Review.find(params[:id])
+    authorize @review
 
     if @review.update(review_params)
       redirect_to property_path(@review.property), notice: "Review updated successfully."
@@ -27,15 +31,11 @@ class ReviewsController < ApplicationController
 
   def destroy
     @review = Review.find(params[:id])
-    property = @review.property
+    authorize @review
 
-    # Solo el creador de la reseña o un moderador pueden borrarla
-    if @review.user == current_user || current_user.name.downcase.include?("mod")
-      @review.destroy
-      redirect_to property_path(property), notice: "Review deleted successfully.", status: :see_other
-    else
-      redirect_to property_path(property), alert: "You are not authorized to delete this review.", status: :see_other
-    end
+    property = @review.property
+    @review.destroy
+    redirect_to property_path(property), notice: "Review deleted successfully.", status: :see_other
   end
 
   private
