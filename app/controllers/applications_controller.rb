@@ -22,6 +22,7 @@ class ApplicationsController < ApplicationController
         authorize @application
 
         if @application.save
+            ApplicationNotificationMailer.new_application(@application).deliver_later
             redirect_to @listing, notice: "Application sent successfully!", status: :see_other
         else
             flash.now[:alert] = @application.errors.full_messages.to_sentence

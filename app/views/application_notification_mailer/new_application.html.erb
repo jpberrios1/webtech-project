@@ -1,0 +1,28 @@
+
+<h1>You have received a new application!</h1>
+
+<p>Hello <%= @host.name %>,</p>
+
+<p>
+  <strong><%= @seeker.name %></strong> has applied to your listing:
+  <strong><%= @listing.title %></strong>.
+</p>
+
+<h2>Application details</h2>
+
+<p><strong>Message:</strong></p>
+<p><%= @application.message %></p>
+
+<p>
+  <strong>Desired move-in date:</strong>
+  <%= @application.desired_move_in_date %>
+</p>
+
+<p>
+  <strong>Length of stay:</strong>
+  <%= @application.length_of_stay_days %> days
+</p>
+
+<p>You can review this application in Roomies.</p>
+
+<p>Thank you for using Roomies!</p>
