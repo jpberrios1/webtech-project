@@ -6,6 +6,9 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
   stale_when_importmap_changes
 
+  after_action :verify_authorized, unless: -> { action_name == "index" }
+  after_action :verify_policy_scoped, if: -> { action_name == "index" }
+
   rescue_from Pundit::NotAuthorizedError, with: :handle_unauthorized
 
   helper_method :current_user
@@ -24,7 +27,14 @@ class ApplicationController < ActionController::Base
 
   def handle_unauthorized(exception)
     policy_name = exception.policy.class.to_s.underscore
-    flash[:alert] = "You are not authorized to perform this action (#{policy_name.humanize})."
-    redirect_back_or_to root_path, status: :see_other
+    action_name = exception.query.to_s.delete("?")
+    @error_message = "You are not authorized to #{action_name} this #{policy_name.downcase.sub(' policy', '')}."
+    flash.now[:alert] = @error_message
+
+    respond_to do |format|
+      format.html { render "shared/unauthorized", status: :forbidden }
+      format.turbo_stream { render "shared/unauthorized", status: :forbidden, formats: [:html] }
+      format.json { render json: { error: @error_message }, status: :forbidden }
+    end
   end
 end

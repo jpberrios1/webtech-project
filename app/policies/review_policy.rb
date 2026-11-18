@@ -24,7 +24,7 @@ class ReviewPolicy < BasePolicy
     end
 
     def update?
-        user.present? && (record.user == user || user.moderator?)
+        user.present? && record.user == user
     end
 
     def destroy?

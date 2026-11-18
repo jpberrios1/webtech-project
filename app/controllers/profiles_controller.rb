@@ -1,4 +1,7 @@
 class ProfilesController < ApplicationController
+  skip_after_action :verify_authorized, raise: false
+  skip_after_action :verify_policy_scoped, raise: false
+
   def show
     @user = current_user
   end

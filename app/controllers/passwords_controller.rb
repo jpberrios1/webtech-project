@@ -1,5 +1,7 @@
 class PasswordsController < ApplicationController
   allow_unauthenticated_access
+  skip_after_action :verify_authorized, raise: false
+  skip_after_action :verify_policy_scoped, raise: false
   before_action :set_user_by_token, only: %i[edit update]
 
   rate_limit to: 10,

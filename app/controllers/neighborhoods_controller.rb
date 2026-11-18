@@ -1,4 +1,5 @@
 class NeighborhoodsController < ApplicationController
+    allow_unauthenticated_access only: [ :index, :show ]
     before_action :set_neighborhood, only: [ :show, :edit, :update, :destroy ]
 
     def index

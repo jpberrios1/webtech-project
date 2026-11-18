@@ -1,4 +1,5 @@
 class AmenitiesController < ApplicationController
+    allow_unauthenticated_access only: [ :index, :show ]
     before_action :set_amenity, only: [ :show, :edit, :update, :destroy ]
 
     def index
