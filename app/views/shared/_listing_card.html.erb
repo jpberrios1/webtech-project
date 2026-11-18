@@ -1,19 +1,10 @@
 <div class="card h-100 shadow-sm border">
   <% if listing.photos.attached? %>
-    <% if listing.photos.attached? %>
-
-      <%= image_tag listing.photos.first.variant(resize_to_limit: [400, 300]), class: "card-img-top", style: "height: 200px; object-fit: cover;" %>
-
-    <% else %>
-
-      <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center"style="height: 200px;">
-        No Image
-      </div>
-
-    <% end %>
+    <%= image_tag listing.photos.first.variant(:card), class: "card-img-top", style: "height: 200px; object-fit: cover;", alt: listing.title %>
+  <% else %>
     <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">No Image</div>
   <% end %>
-  
+
   <div class="card-body">
     <h5 class="card-title"><%= listing.title %></h5>
     <p class="card-text text-truncate"><%= listing.description.to_plain_text %></p>

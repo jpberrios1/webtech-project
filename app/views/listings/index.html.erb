@@ -1,13 +1,110 @@
-<main class="container py-5">
+<%# Search page. Rails renders the filters and the card template; the listing_search
+    Stimulus controller sends the filters to the JSON API with fetch and fills the cards. %>
+<main class="container py-5"
+      data-controller="listing-search"
+      data-listing-search-url-value="<%= api_v1_listings_path %>">
   <div class="text-center mb-5">
     <h1 class="display-5">Available <span class="accent-roomie">Rooms</span></h1>
   </div>
 
-  <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
-    <% @listings.each do |listing| %>
-      <div class="col">
-        <%= render partial: "shared/listing_card", locals: { listing: listing } %>
+  <%# The field names are the API's parameters, so the form's values can be sent to it as they are %>
+  <%= form_with url: listings_path, method: :get, id: "listing-search",
+                class: "bg-white p-3 p-md-4 rounded-4 shadow-sm border mb-4",
+                data: { listing_search_target: "form",
+                        action: "submit->listing-search#search change->listing-search#search" } do |form| %>
+    <div class="row g-2 g-md-3 align-items-end">
+      <div class="col-12 col-md-6 col-lg-3">
+        <%= form.label :neighborhood_id, "Neighborhood", class: "form-label small text-muted mb-1" %>
+        <%= form.select :neighborhood_id,
+                        options_for_select(@neighborhoods.map { |neighborhood| [ "#{neighborhood.name} (#{neighborhood.city})", neighborhood.id ] }, params[:neighborhood_id]),
+                        { include_blank: "All neighborhoods" },
+                        class: "form-select border-0 bg-light" %>
       </div>
-    <% end %>
-  </div>
+
+      <div class="col-6 col-md-3 col-lg-2">
+        <%= form.label :min_rent, "Min rent", class: "form-label small text-muted mb-1" %>
+        <%= form.number_field :min_rent, value: params[:min_rent], min: 0, placeholder: "0", class: "form-control border-0 bg-light" %>
+      </div>
+
+      <div class="col-6 col-md-3 col-lg-2">
+        <%= form.label :max_rent, "Max rent", class: "form-label small text-muted mb-1" %>
+        <%= form.number_field :max_rent, value: params[:max_rent], min: 0, placeholder: "400", class: "form-control border-0 bg-light" %>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-2">
+        <%= form.label :available_by, "Available by", class: "form-label small text-muted mb-1" %>
+        <%= form.date_field :available_by, value: params[:available_by], class: "form-control border-0 bg-light" %>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <%= form.label :sort, "Sort by", class: "form-label small text-muted mb-1" %>
+        <%= form.select :sort,
+                        options_for_select([ [ "Soonest available", "" ], [ "Lowest rent", "rent_asc" ],
+                                             [ "Highest rent", "rent_desc" ], [ "Newest", "newest" ] ], params[:sort]),
+                        {}, class: "form-select border-0 bg-light" %>
+      </div>
+    </div>
+
+    <div class="row g-2 g-md-3 mt-1 align-items-center">
+      <div class="col-12 col-lg-9">
+        <span class="form-label small text-muted me-2">Amenities</span>
+        <%= form.collection_check_boxes :amenity_ids, @amenities, :id, :name,
+                                        { checked: params[:amenity_ids], include_hidden: false } do |box| %>
+          <span class="form-check form-check-inline">
+            <%= box.check_box class: "form-check-input" %>
+            <%= box.label class: "form-check-label small" %>
+          </span>
+        <% end %>
+        <span class="form-check form-check-inline">
+          <%= form.check_box :furnished, { checked: params[:furnished] == "true", class: "form-check-input" }, "true", nil %>
+          <%= form.label :furnished, "Furnished", class: "form-check-label small" %>
+        </span>
+        <span class="form-check form-check-inline">
+          <%= form.check_box :private_bathroom, { checked: params[:private_bathroom] == "true", class: "form-check-input" }, "true", nil %>
+          <%= form.label :private_bathroom, "Private bathroom", class: "form-check-label small" %>
+        </span>
+      </div>
+
+      <div class="col-12 col-lg-3 d-flex gap-2">
+        <%= form.submit "Search", name: nil, class: "btn btn-mio w-100 py-2 rounded-3" %>
+        <%= link_to "Clear", listings_path, class: "btn btn-outline-secondary py-2 rounded-3" %>
+      </div>
+    </div>
+  <% end %>
+
+  <p class="text-muted" aria-live="polite" data-listing-search-target="status">Loading rooms...</p>
+
+  <div class="row row-cols-1 row-cols-md-3 g-4" data-listing-search-target="results"></div>
+
+  <%# Pagination: submit buttons of the search form (form="listing-search"); the controller sets their page %>
+  <nav class="d-flex justify-content-center gap-2 mt-4">
+    <button type="submit" form="listing-search" name="page" class="btn btn-outline-secondary rounded-3"
+            data-listing-search-target="previous" hidden>Previous</button>
+    <button type="submit" form="listing-search" name="page" class="btn btn-outline-secondary rounded-3"
+            data-listing-search-target="next" hidden>Next</button>
+  </nav>
+
+  <%# One result card. It's a template, so the browser doesn't show it: the controller copies it for each listing %>
+  <template data-listing-search-target="template">
+    <div class="col">
+      <div class="card h-100 shadow-sm border">
+        <img data-field="photo" class="card-img-top" style="height: 200px; object-fit: cover;" alt="">
+        <div data-field="no-photo" class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">No Image</div>
+
+        <div class="card-body">
+          <h5 class="card-title" data-field="title"></h5>
+        </div>
+
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" data-field="place"></li>
+          <li class="list-group-item" data-field="rent"></li>
+          <li class="list-group-item" data-field="available"></li>
+        </ul>
+
+        <div class="card-body">
+          <a data-field="link" class="card-link btn-mio">See more</a>
+        </div>
+      </div>
+    </div>
+  </template>
 </main>

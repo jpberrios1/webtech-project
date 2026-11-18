@@ -3,37 +3,33 @@
   <p class="lead text-center text-muted mt-3 mb-5">Find available rooms or list your spare space in a safe and trusted community.</p>
 
   <section class="search bg-white mx-auto py-4 px-3 px-sm-4">
-    <form class="container bg-white p-3 p-md-4 rounded-4 shadow-sm border" style="max-width: 1000px;">
+    <%# A plain GET form: it opens the search page (/listings) with these filters in the URL %>
+    <%= form_with url: listings_path, method: :get,
+                  class: "container bg-white p-3 p-md-4 rounded-4 shadow-sm border", style: "max-width: 1000px;" do |form| %>
       <div class="row g-2 g-md-3 align-items-end">
-        <div class="col-12 col-sm-6 col-lg-3">
-          <label for="search" class="form-label small text-muted mb-1">Search</label>
-          <input type="text" id="search" class="form-control border-0 bg-light" placeholder="Type to search...">
+        <div class="col-12 col-sm-6 col-lg-4">
+          <%= form.label :neighborhood_id, "Neighborhood", class: "form-label small text-muted mb-1" %>
+          <%= form.select :neighborhood_id,
+                          options_for_select(@neighborhoods.map { |neighborhood| [ "#{neighborhood.name} (#{neighborhood.city})", neighborhood.id ] }),
+                          { include_blank: "All neighborhoods" },
+                          class: "form-select border-0 bg-light" %>
         </div>
         <div class="col-12 col-sm-6 col-lg-3">
-          <label for="city" class="form-label small text-muted mb-1">City</label>
-          <select id="city" class="form-select border-0 bg-light">
-            <option selected>All</option>
-            <option value="las-condes">New York</option>
-            <option value="providencia">Boston</option>
-            <option value="santiago-centro">Florida</option>
-          </select>
-        </div>
-        <div class="col-12 col-sm-6 col-lg-2">
-          <label for="budget" class="form-label small text-muted mb-1">Max budget</label>
+          <%= form.label :max_rent, "Max budget", class: "form-label small text-muted mb-1" %>
           <div class="input-group">
             <span class="input-group-text border-0 bg-light text-muted">$</span>
-            <input type="number" id="budget" class="form-control border-0 bg-light" placeholder="400">
+            <%= form.number_field :max_rent, min: 0, placeholder: "400", class: "form-control border-0 bg-light" %>
           </div>
         </div>
-        <div class="col-12 col-sm-6 col-lg-2">
-          <label for="date" class="form-label small text-muted mb-1">Date</label>
-          <input type="date" id="date" class="form-control border-0 bg-light">
+        <div class="col-12 col-sm-6 col-lg-3">
+          <%= form.label :available_by, "Available by", class: "form-label small text-muted mb-1" %>
+          <%= form.date_field :available_by, class: "form-control border-0 bg-light" %>
         </div>
-        <div class="col-12 col-lg-2">
-          <button type="submit" class="btn btn-mio w-100 py-2 rounded-3">Search</button>
+        <div class="col-12 col-sm-6 col-lg-2">
+          <%= form.submit "Search", name: nil, class: "btn btn-mio w-100 py-2 rounded-3" %>
         </div>
       </div>
-    </form>
+    <% end %>
   </section>  
 </main>
 

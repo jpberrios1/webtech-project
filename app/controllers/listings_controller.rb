@@ -2,8 +2,11 @@ class ListingsController < ApplicationController
   allow_unauthenticated_access only: [ :index, :show ]
   before_action :set_listing, only: [ :show, :edit, :update, :destroy ]
 
+  # The search page. Rails renders the filters with the catalogs; the results come from the
+  # public JSON API (GET /api/v1/listings), which the listing_search Stimulus controller calls with fetch
   def index
-    @listings = policy_scope(Listing).where(status: "published")
+    @neighborhoods = policy_scope(Neighborhood).order(:city, :name)
+    @amenities = policy_scope(Amenity).order(:name)
   end
 
   def show
